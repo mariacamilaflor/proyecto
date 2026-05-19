@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduDirectory3.Models;
-
+//648546586546
 public partial class Calificacion
 {
     [Key]
