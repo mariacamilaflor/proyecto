@@ -1,0 +1,321 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model EduDirectory3.ViewModels.BusquedaFiltrosViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{ ViewData["Title"] = "Buscar colegios"; }
+
+<div class="container py-4">
+    <form method="get" asp-action="Index">
+        <div class="row g-4">
+
+            @* ── PANEL FILTROS ── *@
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                  <div class="card-body">
+
+                    @* Búsqueda por nombre *@
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Nombre</label>
+                      <input asp-for="Nombre" class="form-control" placeholder="Buscar institución..."/>
+                    </div>
+
+                    @* Tipo *@
+                    <div class="mb-3">
+                  <label class="form-label fw-semibold">Tipo</label>
+                  <select asp-for="Tipo" class="form-select">
+                    <option value="">Todos</option>
+                    <option>Pública</option>
+                    <option>Privada</option>
+                    <option>Concesión</option>
+                  </select>
+                </div>
+
+                    @* Nivel (checkboxes desde BD) *@
+                    <div class="mb-3">
+                  <label class="form-label fw-semibold">Nivel educativo</label>
+                  @foreach (var n in Model.Niveles)
+                  {
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox"
+                             name="NivelesSeleccionados"
+                             value="@n.Value"
+                             @(Model.NivelesSeleccionados
+                                 .Contains(int.Parse(n.Value))
+                                 ? "checked" : "")/>
+                      <label class="form-check-label">@n.Text</label>
+                    </div>
+                  }
+                </div>
+
+                    @* Jornada *@
+                    <div class="mb-3">
+                  <label class="form-label fw-semibold">Jornada</label>
+                  @foreach (var j in Model.Jornadas)
+                  {
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox"
+                             name="JornadasSeleccionadas"
+                             value="@j.Value"
+                             @(Model.JornadasSeleccionadas
+                                 .Contains(int.Parse(j.Value))
+                                 ? "checked" : "")/>
+                      <label class="form-check-label">@j.Text</label>
+                    </div>
+                  }
+                </div>
+
+                    @* Comuna *@
+                    <div class="mb-3">
+                  <label class="form-label fw-semibold">Comuna</label>
+                  <select asp-for="Comuna" class="form-select">
+                    <option value="">Todas</option>
+                    @foreach (var c in Model.Comunas)
+                    {
+                      <option value="@c">@c</option>
+                    }
+                  </select>
+                </div>
+
+                    @* Costo máximo *@
+                    <div class="mb-3">
+                  <label class="form-label fw-semibold">
+                    Costo máximo: <span id="costoLabel"></span>
+                  </label>
+                  <input asp-for="CostoMax" type="range"
+                         class="form-range"
+                         min="0" max="1000000" step="50000"
+                         oninput="actualizarCosto(this.value)"/>
+                </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                      Buscar
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+                      Limpiar filtros
+                    </a>
+                  </div>
+                </div>
+            </div>
+
+            @* ── RESULTADOS ── *@
+            <div class="col-md-9">
+
+                @* Ordenar y conteo *@
+                <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted">
+                @Model.TotalItems institución(es) encontrada(s)
+              </span>
+              <select name="OrdenarPor" class="form-select w-auto"
+                      onchange="this.form.submit()">
+                <option value="valoracion">Mejor valoradas</option>
+                <option value="costo">Menor costo</option>
+                <option value="nombre">Nombre A–Z</option>
+              </select>
+            </div>
+
+                @* Tarjetas de resultados *@
+                @if (!Model.Resultados.Any())
+                {
+                  <div class="alert alert-info">
+                    No se encontraron instituciones con estos filtros.
+                  </div>
+                }
+                @foreach (var col in Model.Resultados)
+                {
+                    <div class="col-md-12">
+                        <div class="row g-0 border rounded-4 overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                            <div class="col-auto d-none d-lg-block" style="width:200px; height:250px;">
+                                <img src="@(col.Imagen)" class="w-100 h-100" alt="Alternate Text" />
+                            </div>
+                            <div class="col p-3 d-flex flex-column mt-3 position-static">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong class="d-inline-block mb-2 align-self-start badge rounded-pill px-2 py-1 small @(col.Tipo == "Público" ? "bg-publico" : "bg-privado")">@Html.DisplayFor(modelItem => col.Tipo)</strong>
+                                        <h3 class="mb-0"> <b>@Html.DisplayFor(modelItem => col.Nombre)</b> </h3>
+                                        <div class="my-2 text-body-secondary">
+                                            @col.Sedes.Comuna, @col.Sedes.Barrio
+                                        </div>
+                                        <div class="mb-1 mt-1 text-body-secondary">
+                                            
+                                            @foreach (var grupoServicios in col.Academico.Servicios)
+                                            {
+                                                @foreach (var s in grupoServicios)
+                                                {
+                                                    <strong class="d-inline-block mb-2 border rounded-2 align-self-start px-2 py-1 small bg-servicio">
+                                                        @s
+                                                    </strong>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="mb-2 mt-2">
+
+                                            <span class="fw-bold text-warning d-block fs-4">
+                                                <img src="~/Imagen/star.png" alt="Alternate Text" width="25" height="25" class="me-2 mb-2" />
+                                                @col.Opinion.PromedioRating.ToString("0.0")
+                                            </span>
+
+                                            <span class="text-muted d-block">
+                                                @col.Opinion.TotalReseñas opiniones
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-1 d-flex">
+                                    @{
+                                        <partial name="Detalle" model="col" />
+                                    }
+                                    <div class=" d-flex">
+                                        <button class="btn btn-light d-inline-flex align-items-center me-2 border border-1 btnComparar" data-id="@col.IdInstitucion">
+                                            <img src="Imagen/change.png" alt="Alternate Text" width="25" height="25" />
+                                        </button>
+                                        <button class="btn btn-light d-inline-flex align-items-center border border-1" type="submit" _msttexthash="127192" _msthash="12"> 
+                                            <img src="Imagen/message.png" alt="Alternate Text" width="25" height="25" /> 
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                }
+                <div id="modal-container"></div>
+                @* Paginación *@
+                @if (Model.TotalPaginas > 1)
+        {
+          <nav><ul class="pagination justify-content-center">
+            @for (var p = 1; p <= Model.TotalPaginas; p++)
+            {
+              <li class="page-item @(p == Model.Pagina ? "active" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-pagina="@p"
+                   asp-route-nombre="@Model.Nombre"
+                   asp-route-tipo="@Model.Tipo">@p</a>
+              </li>
+            }
+          </ul></nav>
+        }
+
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    function actualizarCosto(val) {
+    document.getElementById('costoLabel').textContent =
+        val == '0' ? 'Gratis'
+        : '$' + parseInt(val).toLocaleString('es-CO');
+    }
+
+         function obtenerComparador() {
+
+            let comparador = localStorage.getItem("comparador");
+
+            return comparador
+                ? JSON.parse(comparador)
+                : [];
+        }
+
+        // ================================
+        // GUARDAR COMPARADOR
+        // ================================
+
+        function guardarComparador(lista) {
+
+            localStorage.setItem(
+                "comparador",
+                JSON.stringify(lista)
+            );
+        }
+
+        // ================================
+        // BOTONES AGREGAR
+        // ================================
+
+        document.querySelectorAll(".btnComparar")
+            .forEach(btn => {
+
+                btn.addEventListener("click", function () {
+
+                    let id = parseInt(this.dataset.id);
+
+                    let comparador = obtenerComparador();
+
+                    // VALIDAR DUPLICADOS
+                    if (comparador.includes(id)) {
+
+                        alert("La institución ya está en el comparador");
+
+                        return;
+                    }
+
+                    // LIMITE
+                    if (comparador.length >= 4) {
+
+                        alert("Solo puedes comparar hasta 4 instituciones");
+
+                        return;
+                    }
+
+                    comparador.push(id);
+
+                    guardarComparador(comparador);
+
+                    actualizarContador();
+
+                    alert("Institución agregada al comparador");
+
+                });
+
+            });
+
+        // ================================
+        // CONTADOR
+        // ================================
+
+        function actualizarContador() {
+
+            let comparador = obtenerComparador();
+
+            let contador = document.getElementById("contadorComparador");
+
+            if (contador) {
+
+                contador.innerText = comparador.length;
+            }
+        }
+
+        actualizarContador();
+
+            document.getElementById("btnIrComparador")
+            .addEventListener("click", function () {
+
+                let comparador = obtenerComparador();
+
+                if (comparador.length < 2) {
+
+                    alert("Selecciona al menos 2 instituciones");
+
+                    return;
+                }
+
+                let url = "/Colegios/Comparar?";
+
+                comparador.forEach(id => {
+
+                    url += `idInstituciones=${id}&`;
+
+                });
+
+                window.location.href = url;
+
+            });
+
+</script>
+}

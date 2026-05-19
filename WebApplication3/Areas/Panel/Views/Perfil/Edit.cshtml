@@ -1,0 +1,248 @@
+﻿@model EduDirectory3.Models.Institucion
+@{
+    bool esNueva = Model.IdInstitucion == 0;
+    ViewData["Title"] = esNueva ? "Registrar Institución" : "Editar Institución";
+    Layout = "~/Areas/Panel/Views/Shared/_PanelLayout.cshtml";
+}
+
+<!-- ENCABEZADO -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-building-gear me-2 text-primary"></i>
+            @(esNueva ? "Registrar Institución" : "Editar Institución")
+        </h4>
+        <small class="text-muted">
+            @(esNueva ? "Completa los datos para registrar tu institución." : "Actualiza la información de tu institución.")
+        </small>
+    </div>
+    @if (!esNueva)
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+    }
+</div>
+
+<!-- ALERTAS DE VALIDACIÓN -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-x-circle-fill me-2"></i>
+        Por favor corrige los errores antes de continuar.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="IdInstitucion" />
+    <input type="hidden" asp-for="IdUsuario" />
+
+    <div class="row g-4">
+
+        <!-- INFORMACIÓN BÁSICA -->
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-info-circle me-2 text-primary"></i>Información básica
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label asp-for="Nombre" class="form-label fw-semibold">
+                                Nombre de la institución <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Ej: Colegio San José" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PaginaWeb" class="form-label fw-semibold">Página web</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-globe2"></i></span>
+                                <input asp-for="PaginaWeb" class="form-control" placeholder="https://www.ejemplo.edu.co" />
+                            </div>
+                            <span asp-validation-for="PaginaWeb" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Tipo" class="form-label fw-semibold">
+                                Tipo <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Tipo" class="form-select">
+                                <option value="">Selecciona...</option>
+                                <option value="Público">Público</option>
+                                <option value="Privado">Privado</option>
+                                <option value="Mixto">Mixto</option>
+                            </select>
+                            <span asp-validation-for="Tipo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Metodologia" class="form-label fw-semibold">Metodología</label>
+                            <select asp-for="Metodologia" class="form-select">
+                                <option value="">Selecciona...</option>
+                                <option value="Presencial">Presencial</option>
+                                <option value="Virtual">Virtual</option>
+                                <option value="Semipresencial">Semipresencial</option>
+                            </select>
+                            <span asp-validation-for="Metodologia" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Calendario" class="form-label fw-semibold">Calendario</label>
+                            <select asp-for="Calendario" class="form-select">
+                                <option value="">Selecciona...</option>
+                                <option value="A">Calendario A</option>
+                                <option value="B">Calendario B</option>
+                            </select>
+                            <span asp-validation-for="Calendario" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Costo" class="form-label fw-semibold">Costo mensual aproximado</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Costo" type="number" class="form-control"
+                                       placeholder="0" min="0" />
+                            </div>
+                            <div class="form-text">Deja en 0 si es gratuito.</div>
+                            <span asp-validation-for="Costo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="HorarioAtencion" class="form-label fw-semibold">Horario de atención</label>
+                            <input asp-for="HorarioAtencion" class="form-control"
+                                   placeholder="Ej: Lun–Vie 7:00am – 5:00pm" />
+                            <span asp-validation-for="HorarioAtencion" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Descripcion" class="form-label fw-semibold">Descripción</label>
+                            <textarea asp-for="Descripcion" class="form-control" rows="4"
+                                      placeholder="Describe brevemente tu institución: misión, valores, enfoque pedagógico..."></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMAGEN -->
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-image me-2 text-primary"></i>Logo / Imagen
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-3 text-center">
+                            @if (!string.IsNullOrEmpty(Model.Imagen))
+                            {
+                                <img src="@Model.Imagen" id="previewImg"
+                                     class="img-fluid rounded border" style="max-height:120px;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                     style="height:120px;" id="previewPlaceholder">
+                                    <i class="bi bi-building text-secondary" style="font-size:2.5rem;"></i>
+                                </div>
+                                <img id="previewImg" class="img-fluid rounded border d-none"
+                                     style="max-height:120px;" />
+                            }
+                        </div>
+                        <div class="col-md-9">
+                            <label class="form-label fw-semibold">URL de imagen o subir archivo</label>
+                            <input asp-for="Imagen" class="form-control mb-2"
+                                   placeholder="https://..." id="imgUrl" />
+                            <span asp-validation-for="Imagen" class="text-danger small"></span>
+                            <div class="form-text">Ingresa una URL o sube el archivo de logo.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECTOR -->
+        @if (Model.Rector != null || esNueva)
+        {
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom fw-semibold">
+                        <i class="bi bi-person-badge me-2 text-primary"></i>Información del Rector
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Nombre</label>
+                                <input name="Rector.Nombre" value="@Model.Rector?.FirstOrDefault()?.Nombre"
+                                       class="form-control" placeholder="Nombre del rector" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Apellido</label>
+                                <input name="Rector.Apellido" value="@Model.Rector?.FirstOrDefault()?.Apellido"
+                                       class="form-control" placeholder="Apellido del rector" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Teléfono</label>
+                                <input name="Rector.Telefono" value="@Model.Rector?.FirstOrDefault()?.Telefono"
+                                       class="form-control" placeholder="Ej: 3001234567" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Email del rector</label>
+                                <input name="Rector.Email" value="@Model.Rector?.FirstOrDefault()?.Email"
+                                       type="email" class="form-control" placeholder="rector@colegio.edu.co" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- BOTONES -->
+        <div class="col-12 d-flex justify-content-end gap-2 pb-4">
+            @if (!esNueva)
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                </a>
+            }
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-floppy me-1"></i>
+                @(esNueva ? "Registrar institución" : "Guardar cambios")
+            </button>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Preview de imagen por URL
+        const imgUrl = document.getElementById('imgUrl');
+        const previewImg = document.getElementById('previewImg');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+
+        if (imgUrl) {
+            imgUrl.addEventListener('input', function () {
+                const url = this.value.trim();
+                if (url) {
+                    previewImg.src = url;
+                    previewImg.classList.remove('d-none');
+                    if (previewPlaceholder) previewPlaceholder.classList.add('d-none');
+                } else {
+                    previewImg.classList.add('d-none');
+                    if (previewPlaceholder) previewPlaceholder.classList.remove('d-none');
+                }
+            });
+        }
+    </script>
+}
+

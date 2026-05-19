@@ -1,0 +1,142 @@
+﻿{
+   "CodeGenerationMode": 6,
+   "ContextClassName": "EduDirectoryContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1465",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "EduDirectory3",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[ActividadesExtracurriculares]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ActividadExtracurricularPreferencia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Calificacion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Chatbot]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Coordenada]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Email]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Evaluacion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Filtro]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FormularioContacto]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FormularioPreferencia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Institucion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Jornada]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[JornadaPreferencia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Nivel]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NivelPreferencia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Rector]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ResultadosIcfes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Sede]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Servicio]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ServiciosPreferencia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Telefono]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Ubicacion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Usuario]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false,
+   "UseTypedTvpParameters": true
+}

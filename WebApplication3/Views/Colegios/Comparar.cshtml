@@ -1,0 +1,157 @@
+﻿@model List<EduDirectory3.ViewModels.ColegioResultadoViewModel>
+
+@{
+    ViewData["Title"] = "Comparar Instituciones";
+}
+
+<h2 class="fw-bold mb-4">
+    Comparar Instituciones
+</h2>
+
+<div class="table-responsive">
+
+    <table class="table table-bordered text-center align-middle">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>Características</th>
+
+                @foreach (var item in Model)
+                {
+                    <th>
+
+                        <img src="@item.Imagen"
+                             class="rounded mb-2"
+                             style="width:120px;height:120px;object-fit:cover;" />
+
+                        <div>
+                            @item.Nombre
+                        </div>
+
+                    </th>
+                }
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <th>Tipo</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>@item.Tipo</td>
+                }
+            </tr>
+
+            <tr>
+                <th>Metodología</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>@item.Metodologia</td>
+                }
+            </tr>
+
+            <tr>
+                <th>Calendario</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>@item.Calendario</td>
+                }
+            </tr>
+
+            <tr>
+                <th>Costo</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>
+                        @(item.Costo.HasValue
+                            ? item.Costo.Value.ToString("C0")
+                            : "No definido")
+                    </td>
+                }
+            </tr>
+
+            <tr>
+                <th>Niveles</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>
+
+                        @foreach (var nivel in item.Academico.Niveles)
+                        {
+                            <span class="badge bg-primary me-1">
+                                @nivel
+                            </span>
+                        }
+
+                    </td>
+                }
+            </tr>
+
+            <tr>
+                <th>Servicios</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>
+
+                        @foreach (var servicio in item.Academico.Servicios)
+                        {
+                            <span class="badge bg-success me-1">
+                                @servicio
+                            </span>
+                        }
+
+                    </td>
+                }
+            </tr>
+
+            <tr>
+                <th>ICFES</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>
+                        @(item.Academico.Puntajes.Any()
+                            ? item.Academico.Puntajes.Max()
+                            : 0)
+                    </td>
+                }
+            </tr>
+
+            <tr>
+                <th>Rating</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>
+                        ⭐ @item.Opinion.PromedioRating.ToString("0.0")
+                    </td>
+                }
+            </tr>
+
+            <tr>
+                <th>Reseñas</th>
+
+                @foreach (var item in Model)
+                {
+                    <td>
+                        @item.Opinion.TotalReseñas
+                    </td>
+                }
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

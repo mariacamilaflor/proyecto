@@ -1,0 +1,273 @@
+﻿@model EduDirectory3.Models.Institucion
+@{
+    ViewData["Title"] = "Mi Institución";
+    Layout = "~/Areas/Panel/Views/Shared/_PanelLayout.cshtml";
+}
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Exito"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- ENCABEZADO -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-building me-2 text-primary"></i>@Model.Nombre
+        </h4>
+        <small class="text-muted">Información general de tu institución</small>
+    </div>
+    <a asp-action="Edit" class="btn btn-primary">
+        <i class="bi bi-pencil-fill me-1"></i> Editar información
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <!-- DATOS GENERALES -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom fw-semibold">
+                <i class="bi bi-info-circle me-2 text-primary"></i>Datos Generales
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Tipo</label>
+                        <p class="fw-semibold mb-0">@(Model.Tipo ?? "—")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Metodología</label>
+                        <p class="fw-semibold mb-0">@(Model.Metodologia ?? "—")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Calendario</label>
+                        <p class="fw-semibold mb-0">@(Model.Calendario ?? "—")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Costo</label>
+                        <p class="fw-semibold mb-0">
+                            <span class="badge bg-success">$@Model.Costo.ToString("N0")</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Horario de Atención</label>
+                        <p class="fw-semibold mb-0">@(Model.HorarioAtencion ?? "—")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Página Web</label>
+                        <p class="fw-semibold mb-0">
+                            @if (!string.IsNullOrEmpty(Model.PaginaWeb))
+                            {
+                                <a href="@Model.PaginaWeb" target="_blank" class="text-primary">
+                                    <i class="bi bi-globe2 me-1"></i>@Model.PaginaWeb
+                                </a>
+                            }
+                            else
+                            {
+
+                                <span>—</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-muted small">Descripción</label>
+                        <p class="mb-0">@(Model.Descripcion ?? "Sin descripción registrada.")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMAGEN Y RECTOR -->
+    <div class="col-lg-4">
+        <!-- Imagen -->
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(Model.Imagen))
+                {
+                    <img src="@Model.Imagen" alt="Logo institución"
+                         class="img-fluid rounded mb-2" style="max-height:140px; object-fit:contain;" />
+                }
+                else
+                {
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center mb-2"
+                         style="height:120px;">
+                        <i class="bi bi-building text-secondary" style="font-size:3rem;"></i>
+                    </div>
+                }
+                <h6 class="fw-bold mb-0">@Model.Nombre</h6>
+                <small class="text-muted">@(Model.Tipo ?? "")</small>
+            </div>
+        </div>
+
+        <!-- Rector -->
+        @if (Model.Rector != null)
+        {
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-person-badge me-2 text-primary"></i>Rector
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 fw-semibold">@Model.Rector.FirstOrDefault()?.Nombre @Model.Rector.FirstOrDefault()?.Apellido</p>
+                    <p class="mb-1 small text-muted"><i class="bi bi-telephone me-1"></i>@Model.Rector.FirstOrDefault()?.Telefono</p>
+                    <p class="mb-0 small text-muted"><i class="bi bi-envelope me-1"></i>@Model.Rector.FirstOrDefault()?.Email</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- SEDES -->
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center fw-semibold">
+                <span><i class="bi bi-geo-alt me-2 text-primary"></i>Sedes (@Model.Sede?.Count)</span>
+                <a asp-area="Panel" asp-controller="Sede" asp-action="Create" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar Sede
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Sede == null || !Model.Sede.Any())
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-geo-alt" style="font-size:2.5rem;"></i>
+                        <p class="mt-2 mb-0">No hay sedes registradas aún.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre Sede</th>
+                                    <th>Dirección</th>
+                                    <th>Barrio</th>
+                                    <th>Teléfonos</th>
+                                    <th>Niveles</th>
+                                    <th>Jornadas</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var sede in Model.Sede)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@sede.NombreSede</td>
+                                        <td>@(sede.Ubicacion?.FirstOrDefault()?.Direccion ?? "—")</td>
+                                        <td>@(sede.Ubicacion?.FirstOrDefault()?.Barrio ?? "—")</td>
+                                        <td>
+                                            @if (sede.Telefono != null && sede.Telefono.Any())
+                                            {
+                                                @string.Join(", ", sede.Telefono.Select(t => t.NumeroTelefono))
+                                            }
+                                            else
+                                            {
+
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (sede.Nivel != null && sede.Nivel.Any())
+                                            {
+                                                foreach (var n in sede.Nivel)
+                                                {
+                                                    <span class="badge bg-info text-dark me-1">@n.NombreNivel</span>
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (sede.Jornada != null && sede.Jornada.Any())
+                                            {
+                                                foreach (var j in sede.Jornada)
+                                                {
+                                                    <span class="badge bg-secondary me-1">@j.NombreJornada</span>
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-area="Panel" asp-controller="Sede" asp-action="Edit"
+                                               asp-route-id="@sede.IdSede"
+                                               class="btn btn-sm btn-outline-secondary me-1" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-area="Panel" asp-controller="Sede" asp-action="Delete"
+                                               asp-route-id="@sede.IdSede"
+                                               class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- EMAILS -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom fw-semibold">
+                <i class="bi bi-envelope me-2 text-primary"></i>Correos registrados
+            </div>
+            <div class="card-body">
+                @if (Model.Email == null || !Model.Email.Any())
+                {
+                    <p class="text-muted mb-0">Sin correos registrados.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var mail in Model.Email)
+                        {
+                            <li class="mb-1">
+                                <i class="bi bi-at text-primary me-1"></i>
+                                <span>@mail.Email1</span>
+                                @if (!string.IsNullOrEmpty(mail.PerteneceA))
+                                {
+                                    <span class="badge bg-light text-dark ms-2">@mail.PerteneceA</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ZONA DE PELIGRO -->
+    <div class="col-md-6">
+        <div class="card border-danger border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom fw-semibold text-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>Zona de peligro
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Eliminar tu institución borrará <strong>toda la información</strong> asociada,
+                    incluyendo sedes, evaluaciones y tu cuenta. Esta acción es irreversible.
+                </p>
+                <a asp-action="Delete" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash me-1"></i>Eliminar institución y cuenta
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+

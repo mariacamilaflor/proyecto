@@ -1,0 +1,122 @@
+﻿@using EduDirectory3
+@using EduDirectory3.Data
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model EduDirectory3.Models.Institucion
+@{
+    bool esNueva = Model.IdInstitucion == 0;
+    ViewData["Title"] = esNueva ? "Nueva Institución" : "Editar Institución";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-building-gear me-2"></i>@ViewData["Title"]
+    </h4>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="@(esNueva ? "Create" : "Edit")" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="IdInstitucion" />
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="PaginaWeb" class="form-label fw-semibold">Página web</label>
+                    <input asp-for="PaginaWeb" class="form-control" placeholder="https://..." />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Tipo" class="form-label fw-semibold">Tipo</label>
+                    <select asp-for="Tipo" class="form-select">
+                        <option value="">Selecciona...</option>
+                        <option value="Tradicional">Tradicional</option>
+                        <option value="Público">Público</option>
+                        <option value="Privado">Privado</option>
+
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Metodologia" class="form-label fw-semibold">Metodología</label>
+                    <select asp-for="Metodologia" class="form-select">
+                        <option value="">Selecciona...</option>
+                        <option value="Tradicional">Tradicional</option>
+                        <option value="Bilingüe">Bilingüe</option>
+                        <option value="Montessori">Montessori</option>
+                        <option value="Constructivista">Constructivista</option>
+                       
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Calendario" class="form-label fw-semibold">Calendario</label>
+                    <select asp-for="Calendario" class="form-select">
+                        <option value="">Selecciona...</option>
+                        <option value="A">Calendario A</option>
+                        <option value="B">Calendario B</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Costo" class="form-label fw-semibold">Costo</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Costo" type="number" class="form-control" min="0" />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="HorarioAtencion" class="form-label fw-semibold">Horario de atención</label>
+                    <input asp-for="HorarioAtencion" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="IdUsuario" class="form-label fw-semibold">Usuario asignado</label>
+                    <select asp-for="IdUsuario" class="form-select">
+                        <option value="">Sin asignar</option>
+                        @foreach (var u in ViewBag.Usuarios as List<EduDirectory3.Models.Usuario> ?? new())
+                        {
+                            <option value="@u.IdUsuario">@u.Nombre @u.Apellido (@u.Correo)</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-8">
+                    <label asp-for="Imagen" class="form-label fw-semibold">URL imagen</label>
+                    <input asp-for="Imagen" class="form-control" placeholder="https://..." />
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Descripcion" class="form-label fw-semibold">Descripción</label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-floppy me-1"></i>@(esNueva ? "Crear" : "Guardar cambios")
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
