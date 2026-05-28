@@ -1,0 +1,77 @@
+﻿@*/Views/Chatbot/Index.cshtml*@
+@{
+    ViewData["Title"] = "Chatbot Colegios";
+   
+}
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/EduDirectory3.styles.css" asp-append-version="true" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css" />
+@if (TempData["MensajeLogin"] != null)
+{
+    <div class="alert alert-warning">
+        <p class="mb-0"> @TempData["MensajeLogin"]</p>
+    </div>
+}
+<div class="container mt-4">
+    <h2>EduChat</h2>
+    <div id="chat-box" class="border rounded p-3 mb-3"
+         style="height:300px;overflow-y:auto;background:#f8f9fa"></div>
+
+    <div class="input-group">
+        <input id="msg" type="text" class="form-control"
+               placeholder="Ej: colegios privados en El Poblado con primaria..." 
+               onkeydown="if(event.key === 'Enter') enviar()" />
+        <button class="btn btn-primary" onclick="enviar()">Enviar</button>
+    </div>
+</div>
+
+<script>
+    const idUsuario = 1; // reemplaza con el id del usuario autenticado
+    let historial = [];
+
+    async function enviarMensaje(mensaje) {
+        historial.push({ role: "user", content: mensaje });
+
+        const res = await fetch('/Chatbot/Chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                mensaje,
+                idUsuario: 1,
+                historial  // ✅ envías todo el historial
+            })
+        });
+
+        const data = await res.json();
+        historial.push({ role: "assistant", content: data.respuesta });
+
+        mostrarMensaje(data.respuesta);
+    }
+    async function enviar() {
+        const msg = document.getElementById("msg").value.trim();
+        if (!msg) return;
+
+        agregarBurbuja("user", msg);
+        document.getElementById("msg").value = "";
+
+        const res = await fetch("/Chatbot/Chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mensaje: msg, idUsuario })
+        });
+        const data = await res.json();
+        agregarBurbuja("bot", data.respuesta);
+    }
+
+    function agregarBurbuja(quien, texto) {
+        const box = document.getElementById("chat-box");
+        const div = document.createElement("div");
+        div.className = quien === "user"
+            ? "text-end mb-2" : "text-start mb-2";
+        div.innerHTML = `<span class="badge ${quien === 'user' ? 'bg-primary' : 'bg-secondary'} p-2"
+                               style="white-space:pre-wrap">${texto}</span>`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+</script>

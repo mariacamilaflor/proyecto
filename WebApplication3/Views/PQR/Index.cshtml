@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "PQR";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <h4 class="fw-bold mb-4">Peticiones, Quejas y Reclamos</h4>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Tipo de solicitud</label>
+        <select id="tipo" class="form-control">
+            <option value="Petición">Petición</option>
+            <option value="Queja">Queja</option>
+            <option value="Reclamo">Reclamo</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <div class="col mb-3">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input type="text" id="nombre" class="form-control" placeholder="Tu nombre" />
+        </div>
+        <div class="col mb-3">
+            <label class="form-label fw-semibold">Apellido</label>
+            <input type="text" id="apellido" class="form-control" placeholder="Tu apellido" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Correo electrónico</label>
+        <input type="email" id="correo" class="form-control" placeholder="correo@ejemplo.com" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Descripción</label>
+        <textarea id="descripcion" class="form-control" rows="5"
+                  placeholder="Describe tu solicitud..."></textarea>
+    </div>
+
+    <button class="btn btn-primary w-100" onclick="enviarCorreo()">
+        Enviar solicitud
+    </button>
+</div>
+
+<script>
+    function enviarCorreo() {
+        var tipo        = document.getElementById('tipo').value;
+        var nombre      = document.getElementById('nombre').value.trim();
+        var apellido    = document.getElementById('apellido').value.trim();
+        var correo      = document.getElementById('correo').value.trim();
+        var descripcion = document.getElementById('descripcion').value.trim();
+
+        if (!nombre || !apellido || !correo || !descripcion) {
+            alert('Por favor completa todos los campos.');
+            return;
+        }
+
+        var asunto = tipo + ' - ' + nombre + ' ' + apellido;
+
+        var cuerpo =
+            'Tipo: ' + tipo + '\n' +
+            'Nombre: ' + nombre + ' ' + apellido + '\n' +
+            'Correo: ' + correo + '\n\n' +
+            'Descripción:\n' + descripcion;
+
+        // Reemplaza este correo por el tuyo
+        var destinatario = 'tucorreo@gmail.com';
+
+        window.location.href =
+            'mailto:' + destinatario +
+            '?subject=' + encodeURIComponent(asunto) +
+            '&body='    + encodeURIComponent(cuerpo);
+    }
+</script>

@@ -1,0 +1,331 @@
+﻿@model EduDirectory3.Areas.Panel.ViewModels.SedeViewModel
+@{
+    ViewData["Title"] = "Nueva Sede";
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+    var inst = ViewBag.Institucion as EduDirectory3.Models.Institucion;
+}
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --verde-claro: #e8f5ee;
+        --borde: #e0ebe5;
+        --gris: #6b7c74;
+        --texto: #1c2b22;
+        --fondo: #f4f7f6;
+    }
+
+    .bienvenida {
+        background: linear-gradient(135deg, var(--verde), #145c38);
+        color: white;
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(26,122,74,0.2);
+    }
+
+        .bienvenida h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .bienvenida p {
+            margin: 0.3rem 0 0;
+            opacity: 0.85;
+            font-size: 0.88rem;
+        }
+
+    .card-seccion {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid var(--borde);
+        padding: 1.8rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .card-seccion h5 {
+            color: var(--verde);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--borde);
+        }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--gris);
+    }
+
+    .form-control, .form-select {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(26,122,74,0.1);
+        }
+
+    .paso {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: var(--verde);
+        color: white;
+        border-radius: 50%;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-right: 0.5rem;
+    }
+
+    /* Lista dinámica */
+    .lista-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .item-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--fondo);
+        border-radius: 8px;
+        padding: 0.4rem 0.6rem;
+    }
+
+        .item-row input {
+            border: none;
+            background: transparent;
+            flex: 1;
+            font-size: 0.88rem;
+            outline: none;
+            color: var(--texto);
+        }
+
+    .btn-add-item {
+        background: var(--verde-claro);
+        color: var(--verde);
+        border: 1.5px solid var(--verde);
+        border-radius: 8px;
+        padding: 0.4rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+        .btn-add-item:hover {
+            background: var(--verde);
+            color: white;
+        }
+
+    .btn-remove-item {
+        background: none;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0 0.3rem;
+        line-height: 1;
+        transition: opacity 0.2s;
+    }
+
+        .btn-remove-item:hover {
+            opacity: 0.7;
+        }
+
+    .btn-guardar {
+        background: var(--verde);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 2rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: background 0.2s;
+    }
+
+        .btn-guardar:hover {
+            background: #145c38;
+            color: white;
+        }
+
+    .btn-volver {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+        color: var(--gris);
+        background: transparent;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-volver:hover {
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+    .alerta-error {
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #dc2626;
+        border-radius: 10px;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="bienvenida">
+    <h2>Nueva Sede — @inst?.Nombre</h2>
+    <p>Completa la información de la nueva sede</p>
+</div>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alerta-error">
+        Por favor corrige los errores antes de continuar.
+    </div>
+}
+
+<form action="/Panel/Sedes/Crear" method="post">
+    @Html.AntiForgeryToken()
+
+    @* 1. NOMBRE SEDE *@
+    <div class="card-seccion">
+        <h5><span class="paso">1</span> Nombre de la Sede</h5>
+        <input type="text" name="NombreSede" class="form-control" placeholder="Ej: Sede Principal" required />
+    </div>
+
+
+    @* 2. UBICACIÓN *@
+    <div class="card-seccion">
+        <h5><span class="paso">2</span> Ubicación</h5>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Dirección</label>
+                <div class="input-group">
+                    <input type="text" name="Direccion" id="inputDireccion"
+                           class="form-control" placeholder="Calle 45 # 12-34" />
+                    <button type="button" class="btn btn-outline-secondary" id="btnGeo" data-url="@Url.Action("Geocodificar", "Sedes", new { area = "Panel" })" onclick="geocodificar()">
+                        <i class="bi bi-geo-alt"></i> Obtener coordenadas
+                    </button>
+                </div>
+                <div id="geo-msg" class="form-text text-success" style="display:none"></div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Barrio</label>
+                <input type="text" name="Barrio" class="form-control" placeholder="Nombre del barrio" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Comuna</label>
+                <input type="text" name="Comuna" class="form-control" placeholder="Comuna o localidad" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Coordenada Y (Latitud)</label>
+                <input type="text" name="CoordenadaY" id="inputCoordenadaY"
+                       class="form-control" placeholder="6.2476" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Coordenada X (Longitud)</label>
+                <input type="text" name="CoordenadaX" id="inputCoordenadaX"
+                       class="form-control" placeholder="-75.5633" />
+            </div>
+            
+        </div>
+    </div>
+
+    @* 3. TELÉFONOS *@
+    <div class="card-seccion">
+        <h5><span class="paso">3</span> Teléfonos</h5>
+        <div class="lista-items" id="lista-telefonos">
+            <div class="item-row">
+                <input type="text" name="Telefonos" placeholder="Ej: 604 123 4567" />
+                <button type="button" class="btn-remove-item" onclick="removeItem(this)">✕</button>
+            </div>
+        </div>
+        <button type="button" class="btn-add-item" onclick="addItem('lista-telefonos', 'Telefonos', 'Ej: 604 123 4567')">
+            + Agregar teléfono
+        </button>
+    </div>
+
+    @* 4. SERVICIOS *@
+    <div class="card-seccion">
+        <h5><span class="paso">4</span> Servicios</h5>
+        <div class="lista-items" id="lista-servicios">
+            <div class="item-row">
+                <input type="text" name="Servicios" placeholder="Ej: Psicología, Comedor, Transporte" />
+                <button type="button" class="btn-remove-item" onclick="removeItem(this)">✕</button>
+            </div>
+        </div>
+        <button type="button" class="btn-add-item" onclick="addItem('lista-servicios', 'Servicios', 'Ej: Comedor escolar')">
+            + Agregar servicio
+        </button>
+    </div>
+
+    @* 5. NIVELES *@
+    <div class="card-seccion">
+        <h5><span class="paso">5</span> Niveles Educativos</h5>
+        <div class="lista-items" id="lista-niveles">
+            <div class="item-row">
+                <input type="text" name="Niveles" placeholder="Ej: Primaria, Secundaria, Media" />
+                <button type="button" class="btn-remove-item" onclick="removeItem(this)">✕</button>
+            </div>
+        </div>
+        <button type="button" class="btn-add-item" onclick="addItem('lista-niveles', 'Niveles', 'Ej: Bachillerato')">
+            + Agregar nivel
+        </button>
+    </div>
+
+    @* 6. JORNADAS *@
+    <div class="card-seccion">
+        <h5><span class="paso">6</span> Jornadas</h5>
+        <div class="lista-items" id="lista-jornadas">
+            <div class="item-row">
+                <input type="text" name="Jornadas" placeholder="Ej: Mañana, Tarde, Noche" />
+                <button type="button" class="btn-remove-item" onclick="removeItem(this)">✕</button>
+            </div>
+        </div>
+        <button type="button" class="btn-add-item" onclick="addItem('lista-jornadas', 'Jornadas', 'Ej: Jornada única')">
+            + Agregar jornada
+        </button>
+    </div>
+
+    @* 7. ACTIVIDADES EXTRACURRICULARES *@
+    <div class="card-seccion">
+        <h5><span class="paso">7</span> Actividades Extracurriculares</h5>
+        <div class="lista-items" id="lista-actividades">
+            <div class="item-row">
+                <input type="text" name="Actividades" placeholder="Ej: Fútbol, Teatro, Robótica" />
+                <button type="button" class="btn-remove-item" onclick="removeItem(this)">✕</button>
+            </div>
+        </div>
+        <button type="button" class="btn-add-item" onclick="addItem('lista-actividades', 'Actividades', 'Ej: Club de lectura')">
+            + Agregar actividad
+        </button>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn-guardar btn">Crear Sede</button>
+        <a asp-action="Index" class="btn-volver">← Volver</a>
+    </div>
+</form>
+
+
+

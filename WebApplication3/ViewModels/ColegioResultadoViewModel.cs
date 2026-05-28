@@ -6,9 +6,9 @@ namespace EduDirectory3.ViewModels
     {
         public int IdInstitucion { get; set; }
         public string Nombre { get; set; } = "";
-        public string? Imagen { get; set; }
-        public string? Tipo { get; set; }
-        public string? Metodologia { get; set; }
+        public string Imagen { get; set; } = "";
+        public string Tipo { get; set; } = "";
+        public string Metodologia { get; set; } = "";
         public decimal? Costo { get; set; }
         public string Descripcion { get; internal set; } = "";
         public string Calendario { get; internal set; } = "";

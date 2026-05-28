@@ -8,8 +8,8 @@ namespace EduDirectory3.ViewModels
         public string? Nombre { get; set; }
 
         // Filtros de Nivel y Jornada (IDs)
-        public List<int> NivelesSeleccionados { get; set; } = new();
-        public List<int> JornadasSeleccionadas { get; set; } = new();
+        public List<string> NivelesSeleccionados { get; set; } = new();
+        public List<string> JornadasSeleccionadas { get; set; } = new();
         public List<int> ServiciosSeleccionados { get; set; } = new();
 
         // Filtros de Institucion

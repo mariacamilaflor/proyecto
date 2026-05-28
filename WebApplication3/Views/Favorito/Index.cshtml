@@ -1,0 +1,75 @@
+﻿@model List<EduDirectory3.Models.Favorito>
+@{
+    ViewData["Title"] = "Mis Favoritos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["MensajeLogin"] != null)
+{
+    <div class="alert alert-warning">
+        <p class="mb-0"> @TempData["MensajeLogin"]</p>
+    </div>
+}
+<div class="container mt-4" style="max-width:800px;">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div style="width:44px;height:44px;background:#fef3c7;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-heart-fill" style="color:#b45309;font-size:20px;"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-0">Mis Favoritos</h4>
+            <small class="text-muted">@Model.Count institución(es) guardada(s)</small>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-heart" style="font-size:48px;display:block;margin-bottom:12px;"></i>
+            <p>Aún no tienes instituciones favoritas.</p>
+            <a asp-controller="Colegios" asp-action="Index" class="btn btn-primary">
+                Explorar instituciones
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var fav in Model)
+            {
+                <div class="col-12">
+                    <div class="card border rounded-3 p-3 d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <h6 class="fw-bold mb-1">@fav.Institucion.Nombre</h6>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                Guardado el @fav.FechaAgregado.ToString("dd/MM/yyyy")
+                            </small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Colegios" asp-action="Detalle"
+                               asp-route-id="@fav.IdInstitucion"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver detalle
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger"
+                                    onclick="eliminarFavorito(@fav.IdInstitucion, this)">
+                                <i class="bi bi-heart-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script>
+    async function eliminarFavorito(idInstitucion, btn) {
+        await fetch('/Favorito/Eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json',
+                       'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '' },
+            body: JSON.stringify(idInstitucion)
+        });
+        btn.closest('.col-12').remove();
+    }
+</script>

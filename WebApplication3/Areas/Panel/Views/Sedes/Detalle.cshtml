@@ -1,0 +1,429 @@
+﻿@model EduDirectory3.Models.Sede
+@{
+    ViewData["Title"] = Model.NombreSede;
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+    var inst = ViewBag.Institucion as EduDirectory3.Models.Institucion;
+    var ubicacion = Model.Ubicacion.FirstOrDefault();
+    var coordenada = ubicacion?.Coordenada.FirstOrDefault();
+}
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --verde-claro: #e8f5ee;
+        --borde: #e0ebe5;
+        --gris: #6b7c74;
+        --texto: #1c2b22;
+        --fondo: #f4f7f6;
+    }
+
+    .sede-header {
+        background: linear-gradient(135deg, var(--verde), #145c38);
+        color: white;
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .sede-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .sede-header p {
+            margin: 0.3rem 0 0;
+            opacity: 0.85;
+            font-size: 0.85rem;
+        }
+
+    .btn-volver {
+        border: 1.5px solid rgba(255,255,255,0.4);
+        border-radius: 8px;
+        padding: 0.4rem 1rem;
+        font-size: 0.82rem;
+        color: white;
+        text-decoration: none;
+        transition: all 0.2s;
+        background: rgba(255,255,255,0.1);
+    }
+
+        .btn-volver:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+        }
+
+    /* Tabs */
+    .tabs-nav {
+        display: flex;
+        gap: 0.3rem;
+        border-bottom: 2px solid var(--borde);
+        margin-bottom: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 0;
+    }
+
+    .tab-btn {
+        padding: 0.6rem 1.1rem;
+        border: none;
+        background: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--gris);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+    }
+
+        .tab-btn.active {
+            color: var(--verde);
+            border-bottom-color: var(--verde);
+        }
+
+        .tab-btn:hover {
+            color: var(--verde);
+        }
+
+    .tab-panel {
+        display: none;
+    }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+    /* Sección */
+    .seccion {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid var(--borde);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--gris);
+    }
+
+    .form-control, .form-select {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.88rem;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(26,122,74,0.1);
+        }
+
+    /* Items lista */
+    .item-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--verde-claro);
+        color: var(--verde);
+        border-radius: 20px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin: 0.2rem;
+    }
+
+    .btn-chip-del {
+        background: none;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        font-size: 0.85rem;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .add-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.8rem;
+    }
+
+        .add-row input {
+            flex: 1;
+            border: 1.5px solid var(--borde);
+            border-radius: 10px;
+            padding: 0.5rem 0.9rem;
+            font-size: 0.88rem;
+        }
+
+            .add-row input:focus {
+                border-color: var(--verde);
+                outline: none;
+            }
+
+    .btn-add {
+        background: var(--verde);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1.1rem;
+        font-weight: 700;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .btn-add:hover {
+            background: #145c38;
+        }
+
+    .btn-guardar {
+        background: var(--verde);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .btn-guardar:hover {
+            background: #145c38;
+        }
+
+    .alerta-exito {
+        background: #e8f5ee;
+        border: 1px solid #a3d9b8;
+        color: #1a5c35;
+        border-radius: 10px;
+        padding: 0.7rem 1.2rem;
+        margin-bottom: 1.2rem;
+        font-size: 0.88rem;
+    }
+</style>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alerta-exito">@TempData["Exito"]</div>
+}
+
+<div class="sede-header">
+    <div>
+        <h2>@Model.NombreSede</h2>
+        <p>@inst?.Nombre</p>
+    </div>
+    <a asp-action="Index" class="btn-volver">← Volver a sedes</a>
+</div>
+
+<!-- TABS -->
+<div class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('ubicacion', this)">Ubicación</button>
+    <button class="tab-btn" onclick="showTab('telefonos', this)">Teléfonos</button>
+    <button class="tab-btn" onclick="showTab('servicios', this)">Servicios</button>
+    <button class="tab-btn" onclick="showTab('niveles', this)">Niveles</button>
+    <button class="tab-btn" onclick="showTab('jornadas', this)">Jornadas</button>
+    <button class="tab-btn" onclick="showTab('actividades', this)">Actividades</button>
+</div>
+
+<!-- TAB: UBICACIÓN -->
+<div id="tab-ubicacion" class="tab-panel active">
+    <div class="seccion">
+        <form action="/Panel/Sedes/GuardarUbicacion" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="idSede" value="@Model.IdSede" />
+            @if (ubicacion != null)
+            {
+                <input type="hidden" name="idUbicacion" value="@ubicacion.IdUbicacion" />
+            }
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Dirección</label>
+                    <div class="input-group">
+                        <input type="text" name="Direccion" id="inputDireccion"
+                               class="form-control" placeholder="Calle 45 # 12-34" value="@ubicacion?.Direccion" />
+                        <button type="button" class="btn btn-outline-secondary" id="btnGeo" data-url="@Url.Action("Geocodificar", "Sedes", new { area = "Panel" })" onclick="geocodificar()">
+                            <i class="bi bi-geo-alt"></i> Obtener coordenadas
+                        </button>
+                    </div>
+                    <div id="geo-msg" class="form-text text-success" style="display:none"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Barrio</label>
+                    <input type="text" name="Barrio" class="form-control" value="@ubicacion?.Barrio" placeholder="Nombre del barrio" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Comuna</label>
+                    <input type="text" name="Comuna" class="form-control" value="@ubicacion?.Comuna" placeholder="Comuna o localidad" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Coordenada Y (Latitud)</label>
+                    <input type="text" name="CoordenadaY" id="inputCoordenadaY" value="@coordenada?.CoordenadaX"
+                           class="form-control" placeholder="6.2476" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Coordenada X (Longitud)</label>
+                    <input type="text" name="CoordenadaX" id="inputCoordenadaX" value="@coordenada?.CoordenadaY"
+                           class="form-control" placeholder="-75.5633" />
+                </div>
+                
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn-guardar">Guardar ubicación</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TAB: TELÉFONOS -->
+<div id="tab-telefonos" class="tab-panel">
+    <div class="seccion">
+        <div id="chips-telefonos">
+            @foreach (var tel in Model.Telefono)
+            {
+                <span class="item-chip">
+                    @tel.NumeroTelefono
+                    <button class="btn-chip-del" onclick="eliminar('/Panel/Sedes/EliminarTelefono', @tel.IdTelefono, this.closest('.item-chip'))">✕</button>
+                </span>
+            }
+        </div>
+        <div class="add-row">
+            <input type="text" id="new-tel" placeholder="Ej: 604 123 4567" />
+            <button class="btn-add" onclick="agregar('/Panel/Sedes/AgregarTelefono', @Model.IdSede, 'new-tel', 'numero', 'chips-telefonos')">+ Agregar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: SERVICIOS -->
+<div id="tab-servicios" class="tab-panel">
+    <div class="seccion">
+        <div id="chips-servicios">
+            @foreach (var srv in Model.Servicio)
+            {
+                <span class="item-chip">
+                    @srv.NombreServicio
+                    <button class="btn-chip-del" onclick="eliminar('/Panel/Sedes/EliminarServicio', @srv.IdServicio, this.closest('.item-chip'))">✕</button>
+                </span>
+            }
+        </div>
+        <div class="add-row">
+            <input type="text" id="new-srv" placeholder="Ej: Comedor, Transporte" />
+            <button class="btn-add" onclick="agregar('/Panel/Sedes/AgregarServicio', @Model.IdSede, 'new-srv', 'nombre', 'chips-servicios')">+ Agregar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: NIVELES -->
+<div id="tab-niveles" class="tab-panel">
+    <div class="seccion">
+        <div id="chips-niveles">
+            @foreach (var niv in Model.Nivel)
+            {
+                <span class="item-chip">
+                    @niv.NombreNivel
+                    <button class="btn-chip-del" onclick="eliminar('/Panel/Sedes/EliminarNivel', @niv.IdNivel, this.closest('.item-chip'))">✕</button>
+                </span>
+            }
+        </div>
+        <div class="add-row">
+            <input type="text" id="new-niv" placeholder="Ej: Primaria, Secundaria" />
+            <button class="btn-add" onclick="agregar('/Panel/Sedes/AgregarNivel', @Model.IdSede, 'new-niv', 'nombre', 'chips-niveles')">+ Agregar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: JORNADAS -->
+<div id="tab-jornadas" class="tab-panel">
+    <div class="seccion">
+        <div id="chips-jornadas">
+            @foreach (var jor in Model.Jornada)
+            {
+                <span class="item-chip">
+                    @jor.NombreJornada
+                    <button class="btn-chip-del" onclick="eliminar('/Panel/Sedes/EliminarJornada', @jor.IdJornada, this.closest('.item-chip'))">✕</button>
+                </span>
+            }
+        </div>
+        <div class="add-row">
+            <input type="text" id="new-jor" placeholder="Ej: Mañana, Tarde" />
+            <button class="btn-add" onclick="agregar('/Panel/Sedes/AgregarJornada', @Model.IdSede, 'new-jor', 'nombre', 'chips-jornadas')">+ Agregar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: ACTIVIDADES -->
+<div id="tab-actividades" class="tab-panel">
+    <div class="seccion">
+        <div id="chips-actividades">
+            @foreach (var act in Model.ActividadesExtracurriculares)
+            {
+                <span class="item-chip">
+                    @act.NombreActividad
+                    <button class="btn-chip-del" onclick="eliminar('/Panel/Sedes/EliminarActividad', @act.IdActividadesExtracurriculares, this.closest('.item-chip'))">✕</button>
+                </span>
+            }
+        </div>
+        <div class="add-row">
+            <input type="text" id="new-act" placeholder="Ej: Fútbol, Teatro, Robótica" />
+            <button class="btn-add" onclick="agregar('/Panel/Sedes/AgregarActividad', @Model.IdSede, 'new-act', 'nombre', 'chips-actividades')">+ Agregar</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showTab(name, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+        async function agregar(url, idSede, inputId, paramNombre, chipsId, emoji) {
+            const input = document.getElementById(inputId);
+            const valor = input.value.trim();
+            if (!valor) return;
+
+            const params = new URLSearchParams();
+            params.append('idSede', idSede);
+            params.append(paramNombre, valor);
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': token },
+                body: params
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const chip = document.createElement('span');
+                chip.className = 'item-chip';
+                chip.innerHTML = `${emoji} ${valor} <button class="btn-chip-del" onclick="eliminar('${url.replace('Agregar', 'Eliminar')}', ${data.id}, this.closest('.item-chip'))">✕</button>`;
+                document.getElementById(chipsId).appendChild(chip);
+                input.value = '';
+            }
+        }
+
+        async function eliminar(url, id, chip) {
+            if (!confirm('¿Eliminar este item?')) return;
+            const params = new URLSearchParams({ id });
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': token },
+                body: params
+            });
+            if (res.ok) chip.remove();
+        }
+    </script>
+}
+

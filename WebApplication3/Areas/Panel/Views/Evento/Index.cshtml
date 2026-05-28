@@ -1,0 +1,72 @@
+﻿@model List<EduDirectory3.Models.Evento>
+@{
+    ViewData["Title"] = "Mis Eventos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4" style="max-width:800px;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width:44px;height:44px;background:#e0f2fe;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-calendar-event-fill" style="color:#0369a1;font-size:20px;"></i>
+            </div>
+            <div>
+                <h4 class="fw-bold mb-0">Mis Eventos</h4>
+                <small class="text-muted">@Model.Count evento(s) publicado(s)</small>
+            </div>
+        </div>
+        <a asp-area="Panel" asp-controller="Evento" asp-action="Crear"
+           class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="bi bi-plus-lg"></i> Nuevo evento
+        </a>
+    </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success">@TempData["Exito"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-calendar-x" style="font-size:48px;display:block;margin-bottom:12px;"></i>
+            <p>Aún no has publicado ningún evento.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var evento in Model)
+            {
+                <div class="col-12">
+                    <div class="card border rounded-3 p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1">@evento.Titulo</h6>
+                                <p class="text-muted small mb-1">@evento.Descripcion</p>
+                                <div class="d-flex gap-3 mt-2">
+                                    <small class="text-primary">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        @evento.Fecha.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+                                    <small class="text-secondary">
+                                        <i class="bi bi-geo-alt me-1"></i>
+                                        @evento.Lugar
+                                    </small>
+                                </div>
+                            </div>
+                            <form asp-area="Panel" asp-controller="Evento" asp-action="Eliminar" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="idEvento" value="@evento.IdEvento" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('¿Eliminar este evento?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

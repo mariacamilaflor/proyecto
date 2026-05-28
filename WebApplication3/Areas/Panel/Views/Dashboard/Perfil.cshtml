@@ -1,0 +1,226 @@
+﻿@model EduDirectory3.Models.Institucion
+@{
+    ViewData["Title"] = "Perfil de la Institución";
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --fondo: #f4f7f6;
+        --card: #ffffff;
+        --texto: #1c2b22;
+        --gris: #6b7c74;
+        --borde: #e0ebe5;
+    }
+
+    .perfil-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+        .perfil-header h2 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--texto);
+        }
+
+        .perfil-header p {
+            margin: 0;
+            color: var(--gris);
+            font-size: 0.9rem;
+        }
+
+    .card-seccion {
+        background: var(--card);
+        border-radius: 16px;
+        border: 1px solid var(--borde);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .card-seccion h5 {
+            color: var(--verde);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--borde);
+        }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--gris);
+    }
+
+    .form-control, .form-select {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(26,122,74,0.1);
+        }
+
+    .img-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 3px solid var(--borde);
+        margin-bottom: 0.8rem;
+    }
+
+    .btn-guardar {
+        background: var(--verde);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 2rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: background 0.2s;
+    }
+
+        .btn-guardar:hover {
+            background: #145c38;
+            color: white;
+        }
+
+    .btn-volver {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+        color: var(--gris);
+        background: transparent;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-volver:hover {
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+    .alerta-exito {
+        background: #e8f5ee;
+        border: 1px solid #a3d9b8;
+        color: #1a5c35;
+        border-radius: 10px;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alerta-exito">✅ @TempData["Exito"]</div>
+}
+
+<div class="perfil-header">
+    <div>
+        <h2>Perfil de la Institución</h2>
+        <p>Edita y actualiza la información pública de tu institución</p>
+    </div>
+</div>
+
+<form asp-action="EditarPerfil" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="IdInstitucion" />
+    <input type="hidden" asp-for="IdUsuario" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    @* INFORMACIÓN GENERAL *@
+    <div class="card-seccion">
+        <h5>Información General</h5>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label asp-for="Nombre" class="form-label">Nombre de la Institución</label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Tipo" class="form-label">Tipo</label>
+                <select asp-for="Tipo" class="form-select">
+                    <option value="Pública">Pública</option>
+                    <option value="Privada">Privada</option>
+                    <option value="Mixta">Mixta</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label asp-for="Descripcion" class="form-label">Descripción</label>
+                <textarea asp-for="Descripcion" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PaginaWeb" class="form-label">Página Web</label>
+                <input asp-for="PaginaWeb" class="form-control" placeholder="https://..." />
+                <span asp-validation-for="PaginaWeb" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="HorarioAtencion" class="form-label">Horario de Atención</label>
+                <input asp-for="HorarioAtencion" class="form-control" placeholder="Lun-Vie 7am-5pm" />
+                <span asp-validation-for="HorarioAtencion" class="text-danger small"></span>
+            </div>
+        </div>
+    </div>
+
+    @* ACADÉMICO *@
+    <div class="card-seccion">
+        <h5>Información Académica</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="Metodologia" class="form-label">Metodología</label>
+                <select asp-for="Metodologia" class="form-select">
+                    <option value="">-- Seleccione --</option>
+                    <option value="Gamificación">Gamificación</option>
+                    <option value="Educación Tradicional">Educación Tradicional</option>
+                    <option value="Aprendizaje Basado en Proyectos (ABP)">Aprendizaje Basado en Proyectos (ABP)</option>
+                    <option value="Aprendizaje Cooperativo">Aprendizaje Cooperativo</option>
+                    <option value="Aprendizaje Basado en Competencias">Aprendizaje Basado en Competencias</option>
+                    <option value="Flipped Classroom (Aula Invertida)">Flipped Classroom (Aula Invertida)</option>
+                    <option value="Pedagogías alternativas">Pedagogías alternativas</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Calendario" class="form-label">Calendario</label>
+                <select asp-for="Calendario" class="form-select">
+                    <option value="A">Calendario A</option>
+                    <option value="B">Calendario B</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Costo" class="form-label">Costo mensual (COP)</label>
+                <input asp-for="Costo" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="Costo" class="text-danger small"></span>
+            </div>
+        </div>
+    </div>
+
+    @* IMAGEN *@
+    <div class="card-seccion">
+        <h5>Imagen / Logo</h5>
+        <img id="preview" src="@Model.Imagen" class="img-preview" onerror="this.src='/img/default-school.png'" />
+        <div>
+            <input type="file" name="imagenFile" class="form-control" accept="image/*"
+                   onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])" />
+            <small class="text-muted">Formatos: JPG, PNG, WEBP. Máximo 2MB.</small>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn-guardar btn">Guardar Cambios</button>
+        <a asp-action="Index" class="btn-volver">← Volver al Dashboard</a>
+    </div>
+</form>

@@ -2,9 +2,9 @@
 {
     public class ContactoViewModel
     {
-        public string? RectorNombre { get; internal set; }
-        public string? RectorApellido { get; internal set; }
-        public string? RectorTelefono { get; internal set; }
-        public string? RectorEmail { get; internal set; }
+        public List<string> RectorNombre { get; internal set; } = new();
+        public List<string> RectorApellido { get; internal set; } = new();
+        public List<string> RectorTelefono { get; internal set; } = new();
+        public List<string> RectorEmail { get; internal set; } = new();
     }
 }

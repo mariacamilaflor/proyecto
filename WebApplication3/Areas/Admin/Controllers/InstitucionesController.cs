@@ -136,9 +136,8 @@ namespace EduDirectory3.Areas.Admin.Controllers
 
             if (inst == null) return NotFound();
 
-            ViewBag.Usuarios = await _context.Usuario
-                .Where(u => u.Rol == "Institucion").ToListAsync();
-            ViewData["Title"] = "Editar Institución";
+            var usuarios = _context.Usuario.ToList(); // o el método que uses para traerlos
+            ViewBag.Usuarios = usuarios;
             return View(inst);
         }
 

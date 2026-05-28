@@ -8,99 +8,285 @@
 <div class="container py-4">
     <form method="get" asp-action="Index">
         <div class="row g-4">
-
             @* ── PANEL FILTROS ── *@
             <div class="col-md-3">
                 <div class="card shadow-sm">
-                  <div class="card-body">
-
-                    @* Búsqueda por nombre *@
-                    <div class="mb-3">
-                      <label class="form-label fw-semibold">Nombre</label>
-                      <input asp-for="Nombre" class="form-control" placeholder="Buscar institución..."/>
+                    <div class="card-body">
+                        @* Búsqueda por nombre *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre</label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Buscar institución..."/>
+                        </div>
+                        @* Tipo *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tipo</label>
+                            <select asp-for="Tipo" class="form-select">
+                                <option value="">Todos</option>
+                                <option>Pública</option>
+                                <option>Privada</option>
+                            </select>
+                        </div>
+                        @* Metodologia *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Metodología</label>
+                            <select asp-for="Metodologia" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="Gamificación">Gamificación</option>
+                                <option value="Educación Tradicional">Educación Tradicional</option>
+                                <option value="Aprendizaje Basado en Proyectos (ABP)">Aprendizaje Basado en Proyectos (ABP)</option>
+                                <option value="Aprendizaje Cooperativo">Aprendizaje Cooperativo</option>
+                                <option value="Aprendizaje Basado en Competencias">Aprendizaje Basado en Competencias</option>
+                                <option value="Flipped Classroom (Aula Invertida)">Flipped Classroom (Aula Invertida)</option>
+                                <option value="Pedagogías alternativas">Pedagogías alternativas</option>
+                            </select>
+                        </div>
+                        @* Calendario *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Calendario</label>
+                            <select asp-for="Calendario" class="form-select">
+                                <option value="">Todos</option>
+                                <option>A</option>
+                                <option>B</option>
+                            </select>
+                        </div>
+                        @* Nivel (checkboxes desde BD) *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nivel educativo</label>
+                            @foreach (var n in Model.Niveles)
+                            {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                        name="NivelesSeleccionados"
+                                        value="@n.Value"
+                                        @(Model.NivelesSeleccionados
+                                            .Contains(n.Value)
+                                            ? "checked" : "")/>
+                                <label class="form-check-label">@n.Text</label>
+                            </div>
+                            }
+                        </div>
+                        @* Jornada *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Jornada</label>
+                            @foreach (var j in Model.Jornadas)
+                            {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                        name="JornadasSeleccionadas"
+                                        value="@j.Value"
+                                        @(Model.JornadasSeleccionadas
+                                            .Contains(j.Value)
+                                            ? "checked" : "")/>
+                                <label class="form-check-label">@j.Text</label>
+                            </div>
+                            }
+                        </div>
+                        @* Comuna *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Comuna</label>
+                            <select asp-for="Comuna" class="form-select">
+                                <option value="">Todas</option>
+                                @foreach (var c in Model.Comunas)
+                                {
+                                    <option value="@c">@c</option>
+                                }
+                            </select>
+                        </div>
+                        @* Costo máximo *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Costo máximo:
+                                <span id="costoLabel" class="text-primary fw-bold">
+                                    @(Model.CostoMax.HasValue ? "$" + Model.CostoMax.Value.ToString("N0") : "Todos")
+                                </span>
+                            </label>
+                            <input asp-for="CostoMax"
+                                   type="range"
+                                   class="form-range"
+                                   min="0" max="1000000" step="50000"
+                                   value="@(Model.CostoMax ?? 0)"
+                                   oninput="actualizarCosto(this.value)" />
+                            <div class="d-flex justify-content-between" style="font-size:11px; color:#aaa;">
+                                <span>$0 (Todos)</span>
+                                <span>$1.000.000</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                          Buscar
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+                          Limpiar filtros
+                        </a>
                     </div>
-
-                    @* Tipo *@
-                    <div class="mb-3">
-                  <label class="form-label fw-semibold">Tipo</label>
-                  <select asp-for="Tipo" class="form-select">
-                    <option value="">Todos</option>
-                    <option>Pública</option>
-                    <option>Privada</option>
-                    <option>Concesión</option>
-                  </select>
-                </div>
-
-                    @* Nivel (checkboxes desde BD) *@
-                    <div class="mb-3">
-                  <label class="form-label fw-semibold">Nivel educativo</label>
-                  @foreach (var n in Model.Niveles)
-                  {
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox"
-                             name="NivelesSeleccionados"
-                             value="@n.Value"
-                             @(Model.NivelesSeleccionados
-                                 .Contains(int.Parse(n.Value))
-                                 ? "checked" : "")/>
-                      <label class="form-check-label">@n.Text</label>
-                    </div>
-                  }
-                </div>
-
-                    @* Jornada *@
-                    <div class="mb-3">
-                  <label class="form-label fw-semibold">Jornada</label>
-                  @foreach (var j in Model.Jornadas)
-                  {
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox"
-                             name="JornadasSeleccionadas"
-                             value="@j.Value"
-                             @(Model.JornadasSeleccionadas
-                                 .Contains(int.Parse(j.Value))
-                                 ? "checked" : "")/>
-                      <label class="form-check-label">@j.Text</label>
-                    </div>
-                  }
-                </div>
-
-                    @* Comuna *@
-                    <div class="mb-3">
-                  <label class="form-label fw-semibold">Comuna</label>
-                  <select asp-for="Comuna" class="form-select">
-                    <option value="">Todas</option>
-                    @foreach (var c in Model.Comunas)
-                    {
-                      <option value="@c">@c</option>
-                    }
-                  </select>
-                </div>
-
-                    @* Costo máximo *@
-                    <div class="mb-3">
-                  <label class="form-label fw-semibold">
-                    Costo máximo: <span id="costoLabel"></span>
-                  </label>
-                  <input asp-for="CostoMax" type="range"
-                         class="form-range"
-                         min="0" max="1000000" step="50000"
-                         oninput="actualizarCosto(this.value)"/>
-                </div>
-
-                    <button type="submit" class="btn btn-primary w-100">
-                      Buscar
-                    </button>
-                    <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
-                      Limpiar filtros
-                    </a>
-                  </div>
                 </div>
             </div>
-
+           
             @* ── RESULTADOS ── *@
             <div class="col-md-9">
+                @* Formulario de preferencia*@
+                <div style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border-radius: 16px; padding: 2.5rem; margin: 2rem 0; position: relative; overflow: hidden;">
 
+                    @* Círculos decorativos de fondo *@
+                    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,0.06);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-60px;right:80px;width:120px;height:120px;background:rgba(255,255,255,0.04);border-radius:50%;"></div>
+
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span style="background:rgba(255,255,255,0.15);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">
+                                    ✨ Recomendación inteligente
+                                </span>
+                            </div>
+                            <h3 class="fw-black text-white mb-2" style="font-size:1.6rem;line-height:1.3;">
+                                ¿No sabes cuál colegio elegir?
+                            </h3>
+                            <p style="color:rgba(255,255,255,0.8);font-size:0.95rem;margin-bottom:0;">
+                                Cuéntanos tus preferencias y en menos de 2 minutos te mostramos
+                                los <strong style="color:white;">5 colegios más compatibles</strong> con tu familia.
+                            </p>
+
+                            @* Chips de características *@
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                @foreach (var item in new[] { "⚡ Rápido y fácil", "🎯 Personalizado", "🆓 Gratis", "📊 Basado en datos" })
+                                {
+                                    <span style="background:rgba(255,255,255,0.12);color:white;font-size:12px;padding:4px 12px;border-radius:20px;">
+                                        @item
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 text-lg-end text-center">
+                            <a asp-controller="Preferencia" asp-action="Index"
+                               style="display:inline-flex;align-items:center;gap:8px;background:white;color:#7c3aed;font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none;font-size:1rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:transform 0.15s;"
+                               onmouseover="this.style.transform='translateY(-2px)'"
+                               onmouseout="this.style.transform='translateY(0)'">
+                                <i class="bi bi-stars" style="font-size:18px;"></i>
+                                Encontrar mi colegio
+                            </a>
+                            <p style="color:rgba(255,255,255,0.6);font-size:11px;margin-top:10px;margin-bottom:0;">
+                                Sin registro requerido
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @* ── CHIPS DE FILTROS ACTIVOS ── *@
+                @{
+                    bool hayFiltros = !string.IsNullOrEmpty(Model.Nombre)
+                                   || !string.IsNullOrEmpty(Model.Tipo)
+                                   || !string.IsNullOrEmpty(Model.Metodologia)
+                                   || !string.IsNullOrEmpty(Model.Calendario)
+                                   || !string.IsNullOrEmpty(Model.Comuna)
+                                   || Model.NivelesSeleccionados.Any()
+                                   || Model.JornadasSeleccionadas.Any()
+                                   || Model.CostoMax > 0;
+                }
+
+                @if (hayFiltros)
+                {
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 bg-light rounded">
+                        <span class="text-muted" style="font-size:12px;">Filtros activos:</span>
+
+                        @if (!string.IsNullOrEmpty(Model.Nombre))
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#E6F1FB;color:#0C447C;border:1px solid #B5D4F4;font-size:12px;font-weight:500;">
+                                🔍 @Model.Nombre
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinFiltro(Model, "Nombre")"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#0C447C;font-size:14px;line-height:1;"
+                                   aria-label="Quitar filtro nombre">×</a>
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Tipo))
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#EAF3DE;color:#27500A;border:1px solid #C0DD97;font-size:12px;font-weight:500;">
+                                🏫 @Model.Tipo
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinFiltro(Model, "Tipo")"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#27500A;font-size:14px;line-height:1;"
+                                   aria-label="Quitar filtro tipo">×</a>
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Metodologia))
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#EEEDFE;color:#3C3489;border:1px solid #CECBF6;font-size:12px;font-weight:500;">
+                                📚 @Model.Metodologia
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinFiltro(Model, "Metodologia")"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#3C3489;font-size:14px;line-height:1;"
+                                   aria-label="Quitar filtro metodología">×</a>
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Calendario))
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#FAEEDA;color:#633806;border:1px solid #FAC775;font-size:12px;font-weight:500;">
+                                📅 Calendario @Model.Calendario
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinFiltro(Model, "Calendario")"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#633806;font-size:14px;line-height:1;"
+                                   aria-label="Quitar filtro calendario">×</a>
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Comuna))
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#E1F5EE;color:#085041;border:1px solid #9FE1CB;font-size:12px;font-weight:500;">
+                                📍 @Model.Comuna
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinFiltro(Model, "Comuna")"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#085041;font-size:14px;line-height:1;"
+                                   aria-label="Quitar filtro comuna">×</a>
+                            </span>
+                        }
+                        @foreach (var nivel in Model.NivelesSeleccionados)
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#FAECE7;color:#712B13;border:1px solid #F5C4B3;font-size:12px;font-weight:500;">
+                                🎓 @nivel
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinNivel(Model, nivel)"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#712B13;font-size:14px;line-height:1;"
+                                   aria-label="Quitar nivel @nivel">×</a>
+                            </span>
+                        }
+                        @foreach (var jornada in Model.JornadasSeleccionadas)
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#F1EFE8;color:#444441;border:1px solid #D3D1C7;font-size:12px;font-weight:500;">
+                                🕐 @jornada
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinJornada(Model, jornada)"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#444441;font-size:14px;line-height:1;"
+                                   aria-label="Quitar jornada @jornada">×</a>
+                            </span>
+                        }
+                        @if (Model.CostoMax > 0)
+                        {
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 px-3 py-2"
+                                  style="background:#FAEEDA;color:#633806;border:1px solid #FAC775;font-size:12px;font-weight:500;">
+                                💰 Hasta $@(Model.CostoMax?.ToString("N0") ?? "0")
+                                <a asp-action="Index"
+                                   asp-all-route-data="@ChipHelper.SinFiltro(Model, "CostoMax")"
+                                   class="ms-1 text-decoration-none"
+                                   style="color:#633806;font-size:14px;line-height:1;"
+                                   aria-label="Quitar filtro costo">×</a>
+                            </span>
+                        }
+
+                        <a asp-action="Index" class="btn btn-link btn-sm text-muted p-0 ms-1">Quitar todos</a>
+                    </div>
+                }
                 @* Ordenar y conteo *@
                 <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="text-muted">
@@ -113,7 +299,6 @@
                 <option value="nombre">Nombre A–Z</option>
               </select>
             </div>
-
                 @* Tarjetas de resultados *@
                 @if (!Model.Resultados.Any())
                 {
@@ -131,10 +316,11 @@
                             <div class="col p-3 d-flex flex-column mt-3 position-static">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <strong class="d-inline-block mb-2 align-self-start badge rounded-pill px-2 py-1 small @(col.Tipo == "Público" ? "bg-publico" : "bg-privado")">@Html.DisplayFor(modelItem => col.Tipo)</strong>
-                                        <h3 class="mb-0"> <b>@Html.DisplayFor(modelItem => col.Nombre)</b> </h3>
+                                        <strong class="d-inline-block mb-2 align-self-start badge rounded-pill px-2 py-1 small @(col.Tipo == "Pública" ? "bg-publico" : "bg-privado")">@Html.DisplayFor(modelItem => col.Tipo)</strong>
+                                        <h3 class="mb-0"> <b>@col.Nombre</b> </h3>
                                         <div class="my-2 text-body-secondary">
-                                            @col.Sedes.Comuna, @col.Sedes.Barrio
+                                            @col.Sedes.Barrio.FirstOrDefault(),
+                                            @col.Sedes.Comuna.FirstOrDefault()
                                         </div>
                                         <div class="mb-1 mt-1 text-body-secondary">
                                             
@@ -169,12 +355,19 @@
                                         <partial name="Detalle" model="col" />
                                     }
                                     <div class=" d-flex">
-                                        <button class="btn btn-light d-inline-flex align-items-center me-2 border border-1 btnComparar" data-id="@col.IdInstitucion">
-                                            <img src="Imagen/change.png" alt="Alternate Text" width="25" height="25" />
+                                        <button class="btn btn-outline-danger btn-sm me-2"
+                                                onclick="toggleFavorito(@col.IdInstitucion, this)"
+                                                id="btn-fav-@col.IdInstitucion">
+                                            <i class="bi bi-heart"></i>
                                         </button>
-                                        <button class="btn btn-light d-inline-flex align-items-center border border-1" type="submit" _msttexthash="127192" _msthash="12"> 
-                                            <img src="Imagen/message.png" alt="Alternate Text" width="25" height="25" /> 
+                                        <button class="btn btn-light d-inline-flex align-items-center me-2 border border-1 btnComparar" data-id="@col.IdInstitucion" data-bs-toggle="tooltip" title="Presiona para comparar el colegio">
+                                            <img src="~/Imagen/change.png" alt="Alternate Text" width="25" height="25" />
                                         </button>
+                                        <a class="btn btn-light d-inline-flex align-items-center border border-1" 
+                                           href="@Url.Action("Crear", "FormularioContacto", new { IdInstitucion = col.IdInstitucion })" 
+                                           data-bs-toggle="tooltip" title="Presiona para comunicarte con el colegio" >
+                                            <img src="~/Imagen/message.png" alt="Alternate Text" width="25" height="25" />
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -205,117 +398,116 @@
     </form>
 </div>
 
-@section Scripts {
 <script>
-    function actualizarCosto(val) {
-    document.getElementById('costoLabel').textContent =
-        val == '0' ? 'Gratis'
-        : '$' + parseInt(val).toLocaleString('es-CO');
+    document.addEventListener('DOMContentLoaded', async function () {
+        const res = await fetch('/Favorito/MisFavoritos');
+        if (!res.ok) return; // si no está autenticado no hace nada
+
+        const data = await res.json();
+        data.forEach(function (idInstitucion) {
+            const btn = document.getElementById('btn-fav-' + idInstitucion);
+            if (btn) {
+                btn.classList.remove('btn-outline-danger');
+                btn.classList.add('btn-danger');
+                btn.querySelector('i').classList.remove('bi-heart');
+                btn.querySelector('i').classList.add('bi-heart-fill');
+            }
+        });
+    });
+        async function toggleFavorito(idInstitucion, btn) {
+        var icono = btn.querySelector('i');
+        var esFavorito = icono.classList.contains('bi-heart-fill');
+        var url = esFavorito ? '/Favorito/Eliminar' : '/Favorito/Agregar';
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(idInstitucion)
+        });
+
+        if (res.ok) {
+            icono.classList.toggle('bi-heart');
+            icono.classList.toggle('bi-heart-fill');
+            btn.classList.toggle('btn-outline-danger');  // ← danger no warning
+            btn.classList.toggle('btn-danger');           // ← danger no warning
+        }
+    }
+    // Colores por tipo de filtro
+    const chipColors = {
+      q:         { bg: '#E6F1FB', text: '#0C447C', border: '#B5D4F4', closeBg: '#B5D4F4' },
+      categoria: { bg: '#EAF3DE', text: '#27500A', border: '#C0DD97', closeBg: '#C0DD97' },
+      precio:    { bg: '#FAEEDA', text: '#633806', border: '#FAC775', closeBg: '#FAC775' },
+      talla:     { bg: '#EEEDFE', text: '#3C3489', border: '#CECBF6', closeBg: '#CECBF6' },
+    };
+
+    // Filtros activos (se llena al cargar la página desde la URL)
+    const activeFilters = {};
+
+    // Al cargar, leer todos los parámetros de la URL
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      params.forEach((value, key) => {
+        if (chipColors[key]) activeFilters[key] = value;
+      });
+      renderChips();
+      buscarProductos(); // tu función de búsqueda
+    });
+
+    function renderChips() {
+      const bar = document.getElementById('filterBar');
+      const container = document.getElementById('chipsContainer');
+      const keys = Object.keys(activeFilters);
+      container.innerHTML = '';
+
+      if (keys.length === 0) { bar.style.display = 'none'; return; }
+      bar.style.display = 'flex';
+
+      keys.forEach(key => {
+        const c = chipColors[key];
+        const chip = document.createElement('span');
+        chip.style.cssText = `display:inline-flex; align-items:center; gap:6px; background:${c.bg}; color:${c.text}; border:1px solid ${c.border}; border-radius:999px; padding:4px 6px 4px 12px; font-size:13px; font-weight:500;`;
+        chip.innerHTML = `
+          ${activeFilters[key]}
+          <button onclick="removeFilter('${key}')"
+            style="width:18px;height:18px;border-radius:50%;background:${c.closeBg};color:${c.text};border:none;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;padding:0;"
+            aria-label="Quitar filtro ${key}">×</button>
+        `;
+        container.appendChild(chip);
+      });
     }
 
-         function obtenerComparador() {
+    function removeFilter(key) {
+      delete activeFilters[key];
+      actualizarURL();
+      renderChips();
+      buscarProductos();
+    }
 
-            let comparador = localStorage.getItem("comparador");
+    function clearAllFilters() {
+      Object.keys(activeFilters).forEach(k => delete activeFilters[k]);
+      actualizarURL();
+      renderChips();
+      buscarProductos();
+    }
 
-            return comparador
-                ? JSON.parse(comparador)
-                : [];
+    function actualizarURL() {
+      const params = new URLSearchParams(activeFilters);
+      const nueva = window.location.pathname + (params.toString() ? '?' + params : '');
+      history.pushState({}, '', nueva); // sin recargar la página
+    }
+
+    function actualizarCosto(valor) {
+        const label = document.getElementById('costoLabel');
+        if (valor == 0) {
+            label.textContent = 'Todos';
+        } else {
+            label.textContent = '$' + parseInt(valor).toLocaleString('es-CO');
         }
+    }
 
-        // ================================
-        // GUARDAR COMPARADOR
-        // ================================
-
-        function guardarComparador(lista) {
-
-            localStorage.setItem(
-                "comparador",
-                JSON.stringify(lista)
-            );
-        }
-
-        // ================================
-        // BOTONES AGREGAR
-        // ================================
-
-        document.querySelectorAll(".btnComparar")
-            .forEach(btn => {
-
-                btn.addEventListener("click", function () {
-
-                    let id = parseInt(this.dataset.id);
-
-                    let comparador = obtenerComparador();
-
-                    // VALIDAR DUPLICADOS
-                    if (comparador.includes(id)) {
-
-                        alert("La institución ya está en el comparador");
-
-                        return;
-                    }
-
-                    // LIMITE
-                    if (comparador.length >= 4) {
-
-                        alert("Solo puedes comparar hasta 4 instituciones");
-
-                        return;
-                    }
-
-                    comparador.push(id);
-
-                    guardarComparador(comparador);
-
-                    actualizarContador();
-
-                    alert("Institución agregada al comparador");
-
-                });
-
-            });
-
-        // ================================
-        // CONTADOR
-        // ================================
-
-        function actualizarContador() {
-
-            let comparador = obtenerComparador();
-
-            let contador = document.getElementById("contadorComparador");
-
-            if (contador) {
-
-                contador.innerText = comparador.length;
-            }
-        }
-
-        actualizarContador();
-
-            document.getElementById("btnIrComparador")
-            .addEventListener("click", function () {
-
-                let comparador = obtenerComparador();
-
-                if (comparador.length < 2) {
-
-                    alert("Selecciona al menos 2 instituciones");
-
-                    return;
-                }
-
-                let url = "/Colegios/Comparar?";
-
-                comparador.forEach(id => {
-
-                    url += `idInstituciones=${id}&`;
-
-                });
-
-                window.location.href = url;
-
-            });
-
+    // Mostrar valor correcto al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        const slider = document.querySelector('input[type="range"]');
+        if (slider) actualizarCosto(slider.value);
+    });
 </script>
-}

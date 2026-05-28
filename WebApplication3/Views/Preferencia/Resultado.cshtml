@@ -1,0 +1,166 @@
+﻿@{
+    ViewData["Title"] = "Colegios recomendados";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var resultados = ViewBag.Resultados;
+}
+
+<div class="container mt-4" style="max-width:800px;">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div style="width:44px;height:44px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-stars" style="color:#7c3aed;font-size:20px;"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-0">Tus colegios recomendados</h4>
+            <small class="text-muted">Basado en tus preferencias encontramos estos resultados</small>
+        </div>
+    </div>
+
+    @if (resultados == null || ((IEnumerable<dynamic>)resultados).Count() == 0)
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-emoji-frown" style="font-size:48px;display:block;margin-bottom:12px;"></i>
+            <p>No encontramos colegios que coincidan con tus preferencias.</p>
+            <a asp-action="Index" class="btn btn-primary">Intentar de nuevo</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @{
+                int posicion = 1;
+            }
+            @foreach (var r in resultados)
+            {
+                var medalla = posicion == 1 ? ("#FFD700", "bi-trophy-fill") :
+                              posicion == 2 ? ("#C0C0C0", "bi-trophy-fill") :
+                              posicion == 3 ? ("#CD7F32", "bi-trophy-fill") :
+                                             ("#94a3b8", "bi-star-fill");
+
+                var colorBarra = r.Porcentaje >= 80 ? "#7c3aed" :
+                                 r.Porcentaje >= 60 ? "#3b82f6" :
+                                 r.Porcentaje >= 40 ? "#f59e0b" : "#94a3b8";
+                <div class="col-12">
+                    <div class="card border rounded-3 p-4" style="@(posicion == 1 ? "border-color:#7c3aed !important; box-shadow: 0 0 0 1px #7c3aed20;" : "")">
+
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            @* Info institución *@
+                            <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                <div style="position:relative;">
+                                    <img src="@r.Institucion.Imagen" width="56" height="56"
+                                         style="border-radius:10px;object-fit:cover;border:1px solid #e2e8f0;" />
+                                    @if (posicion <= 3)
+                                    {
+                                        <span style="position:absolute;top:-8px;left:-8px;font-size:18px;">
+                                            @(posicion == 1 ? "🥇" : posicion == 2 ? "🥈" : "🥉")
+                                        </span>
+                                    }
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">@r.Institucion.Nombre</h6>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <span class="badge rounded-pill"
+                                              style="background:@(r.Institucion.Tipo == "Pública" ? "#dcfce7" : "#fef3c7");
+                                            color:@(r.Institucion.Tipo == "Pública" ? "#15803d" : "#b45309");
+                                            font-size:11px;">
+                                            @r.Institucion.Tipo
+                                        </span>
+                                        <span class="badge rounded-pill bg-light text-secondary" style="font-size:11px;">
+                                            @r.Institucion.Metodologia
+                                        </span>
+                                        <span class="badge rounded-pill bg-light text-secondary" style="font-size:11px;">
+                                            <i class="bi bi-currency-dollar"></i>
+                                            @r.Institucion.Costo.ToString("N0")
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Score *@
+                            <div class="text-center" style="min-width:80px;">
+                                <i class="bi @medalla.Item2" style="font-size:22px;color:@medalla.Item1;"></i>
+                                <div style="font-size:26px;font-weight:800;color:@colorBarra;line-height:1.1;">
+                                    @r.Porcentaje%
+                                </div>
+                                <div style="font-size:11px;color:#94a3b8;font-weight:600;">compatible</div>
+                            </div>
+                        </div>
+
+                        @* Barra de progreso *@
+                        <div style="margin-top:14px;background:#f1f5f9;border-radius:20px;height:8px;">
+                            <div style="width:@(r.Porcentaje)%;background:@colorBarra;border-radius:20px;height:8px;transition:width 0.8s ease;"></div>
+                        </div>
+
+                        @* Desglose del score *@
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            @if (r.ScoreTipo > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Tipo ✓
+                                </span>
+                            }
+                            @if (r.ScorePresupuesto > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Presupuesto ✓
+                                </span>
+                            }
+                            @if (r.ScoreMetodologia > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Metodología ✓
+                                </span>
+                            }
+                            @if (r.ScoreServicios > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Servicios ✓
+                                </span>
+                            }
+                            @if (r.ScoreJornadas > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Jornada ✓
+                                </span>
+                            }
+                            @if (r.ScoreNiveles > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Nivel ✓
+                                </span>
+                            }
+                            @if (r.ScoreActividades > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Actividades ✓
+                                </span>
+                            }
+                        </div>
+
+                        @* Botones *@
+                        <div class="d-flex gap-2 mt-3">
+                            <a asp-controller="Colegios" asp-action="Index"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-search me-1"></i> Ver en directorio
+                            </a>
+                            @if (!string.IsNullOrEmpty(r.Institucion.PaginaWeb))
+                            {
+                                <a href="@r.Institucion.PaginaWeb" target="_blank"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-globe me-1"></i> Sitio web
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                posicion++;
+            }
+        </div>
+
+        <div class="text-center mt-4 mb-5">
+            <a asp-action="Index" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i> Cambiar preferencias
+            </a>
+        </div>
+    }
+</div>

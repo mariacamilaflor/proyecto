@@ -9,110 +9,146 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
-            :root {
-                --edu-blue: #1D4ED8;
-                --edu-bg-light: #F8FAFC;
-            }
+        :root {
+            --edu-blue: #1D4ED8;
+            --edu-bg-light: #F8FAFC;
+        }
 
-            body {
-                background-color: #f1f5f9;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-            /* Estilos de la Modal */
-            .modal-content {
-                border-radius: 1rem;
-                border: none;
-                overflow: hidden;
-                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            }
+        /* Estilos de la Modal */
+        .modal-content {
+            border-radius: 1rem;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
 
-            .nav-tabs {
-                border-bottom: 1px solid #f1f5f9;
-                background-color: var(--edu-bg-light);
-            }
+        .nav-tabs {
+            border-bottom: 1px solid #f1f5f9;
+            background-color: var(--edu-bg-light);
+        }
 
-            .nav-link {
-                color: #64748b;
-                font-weight: 600;
-                border: none !important;
-                padding: 1rem 1.5rem;
-                font-size: 0.9rem;
-            }
+        .nav-link {
+            color: #64748b;
+            font-weight: 600;
+            border: none !important;
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+        }
 
-                .nav-link.active {
-                    color: var(--edu-blue) !important;
-                    background: white !important;
-                    border-bottom: 3px solid var(--edu-blue) !important;
-                }
+        .nav-link.active {
+            color: var(--edu-blue) !important;
+            background: white !important;
+            border-bottom: 3px solid var(--edu-blue) !important;
+        }
 
-            /* Tarjetas de Información */
-            .info-card {
-                border: 1px solid #f1f5f9;
-                border-radius: 0.75rem;
-                padding: 1.25rem;
-                height: 100%;
-                transition: all 0.2s;
-            }
+        /* Tarjetas de Información */
+        .info-card {
+            border: 1px solid #f1f5f9;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            height: 100%;
+            transition: all 0.2s;
+        }
 
-            .icon-box {
-                width: 48px;
-                height: 48px;
-                background-color: #eff6ff;
-                color: var(--edu-blue);
-                border-radius: 0.5rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.25rem;
-            }
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background-color: #eff6ff;
+            color: var(--edu-blue);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
 
-            /* Calificaciones por Áreas */
-            .rating-detail-box {
-                background-color: #f8fafc;
-                border-top: 1px solid #f1f5f9;
-                padding: 1rem;
-            }
+        /* Calificaciones por Áreas */
+        .rating-detail-box {
+            background-color: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            padding: 1rem;
+        }
 
-            .rating-item p {
-                font-size: 0.65rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                color: #94a3b8;
-                margin-bottom: 2px;
-            }
+        .rating-item p {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 2px;
+        }
 
-            .star-active {
-                color: #facc15;
-            }
+        .star-active {
+            color: #facc15;
+        }
 
-            .star-inactive {
-                color: #cbd5e1;
-            }
+        .star-inactive {
+            color: #cbd5e1;
+        }
 
-            .btn-edu-primary {
-                background-color: var(--edu-blue);
-                color: white;
-                font-weight: 700;
-                border-radius: 0.5rem;
-                padding: 0.6rem 1.5rem;
-                border: none;
-            }
+        .btn-edu-primary {
+            background-color: var(--edu-blue);
+            color: white;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1.5rem;
+            border: none;
+        }
 
-                .btn-edu-primary:hover {
-                    background-color: #1e40af;
-                    color: white;
-                }
+        .btn-edu-primary:hover {
+            background-color: #1e40af;
+            color: white;
+        }
+        @* Estilo mínimo del botón disparador *@
+
+        .btn-resena {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1.5px solid #f0c040;
+            border-radius: 8px;
+            background: transparent;
+            color: #1a1a2e;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .btn-resena:hover {
+            background: #fffbe6;
+        }
+
+        .btn-resena i {
+            color: #EF9F27;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <button type="button" class="btn btn-edu-primary d-inline-flex w-100 justify-content-center align-items-center me-2" data-bs-toggle="modal" data-bs-target="#modalInstitucion">
-            Ver Detalle Colegio
-        </button>
-    </div>
+    @{
+        var mostrarBoton = ViewData["MostrarBoton"] as bool? ?? true;
+    }
 
-    <div class="modal fade" id="modalInstitucion" tabindex="-1" aria-hidden="true">
+    @if (mostrarBoton)
+    {
+        <div class="container">
+            <button type="button" class="btn btn-edu-primary d-inline-flex w-100 justify-content-center align-items-center me-2"
+                    data-bs-toggle="modal" data-bs-target="#modalInstitucion-@Model.IdInstitucion">
+                Ver Detalle Colegio
+            </button>
+        </div>
+    }
+
+
+
+    <div class="modal fade" id="modalInstitucion-@Model.IdInstitucion" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header border-0 p-4 p-sm-5 pb-3">
@@ -129,31 +165,35 @@
                                 </span>
                             </div>
                             <h2 class="fw-bold mb-1 text-dark">@Model.Nombre</h2>
-                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill text-primary me-1"></i>@Model.Sedes.Comuna, @Model.Sedes.Comuna</p>
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                                @Model.Sedes.Barrio.FirstOrDefault(),
+                                @Model.Sedes.Comuna.FirstOrDefault()
+                            </p>
                         </div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <ul class="nav nav-tabs px-4" id="instTab" role="tablist">
+                <ul class="nav nav-tabs px-4" id="instTab-@Model.IdInstitucion" role="tablist">
                     <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general" type="button">Información General</button>
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general-@Model.IdInstitucion" type="button">Información General</button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#academico" type="button">Académico</button>
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#academico-@Model.IdInstitucion" type="button">Académico</button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sedes" type="button">Sedes</button>
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sedes-@Model.IdInstitucion" type="button">Sedes</button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contacto" type="button">Contacto</button>
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contacto-@Model.IdInstitucion" type="button">Contacto</button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#opiniones" type="button">Opiniones</button>
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#opiniones-@Model.IdInstitucion" type="button">Opiniones</button>
                     </li>
                 </ul>
                 <div class="modal-body p-2 p-md-4">
                     <div class="tab-content">
-                        <div class="tab-pane fade show active" id="general">
+                        <div class="tab-pane fade show active" id="general-@Model.IdInstitucion">
                             <div class="row g-4 p-4">
                                 <div class="col-md-8">
                                     <h5 class="fw-bold mb-3">Sobre la Institución</h5>
@@ -184,8 +224,11 @@
                                             <div class="info-card d-flex align-items-center gap-3">
                                                 <div class="icon-box"><i class="bi bi-calendar-event"></i></div>
                                                 <div>
-                                                    <small class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.6rem;">Metodologia</small>
-                                                    <span class="fw-bold">@Model.Metodologia</span>
+                                                    <small class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.6rem;">Metodología</small>
+                                                    <span data-bs-toggle="tooltip"
+                                                          data-bs-placement="top"
+                                                          data-bs-custom-class="tooltip-metodologia"
+                                                          data-metodologia="@Model.Metodologia" class="fw-bold">@Model.Metodologia</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -218,7 +261,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="academico">
+                        <div class="tab-pane fade" id="academico-@Model.IdInstitucion">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="info-card">
@@ -250,7 +293,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="opiniones">
+                        <div class="tab-pane fade" id="opiniones-@Model.IdInstitucion">
+                           
+                                <button type="button"
+                                        class="btn btn-warning mb-4 d-inline-flex w-100 justify-content-center align-items-center mt-2"
+                                        onclick="abrirModalResena(@Model.IdInstitucion)">
+                                    <i class="bi bi-star me-2"></i> Dejar reseña
+                                </button>
+                            
 
                             @if (Model.Opinion.Comentarios.Count > 0)
                             {
@@ -266,7 +316,7 @@
                                     var profesores = Model.Opinion.Profesores.ElementAtOrDefault(comentario.Index);
                                     var actividades = Model.Opinion.ActividadesEx.ElementAtOrDefault(comentario.Index);
                                     var infraestructura = Model.Opinion.Infraestructura.ElementAtOrDefault(comentario.Index);
-
+                                    var id = Model.Opinion.IdEvaluacion.ElementAtOrDefault(comentario.Index);
                                     var nombre = Model.Opinion.Nombres.ElementAtOrDefault(comentario.Index);
                                     var apellido = Model.Opinion.Apellidos.ElementAtOrDefault(comentario.Index);
 
@@ -279,9 +329,9 @@
                                         infraestructura) / 6;
 
                                     <div class="card border rounded-4 overflow-hidden mb-4 shadow-sm">
+                                        <button data-bs-toggle="tooltip" title="Reportar mensaje" type="button" class="btn btn-sm p-3 position-absolute top-0 end-0" onclick="reportarResena(@id)"><i class="bi bi-exclamation-circle"></i></button>
 
-                                        <div class="card-body p-4">
-
+                                        <div class="card-body p-5">
                                             <div class="d-flex justify-content-between align-items-center mb-3">
 
                                                 <div class="d-flex align-items-center gap-3">
@@ -296,9 +346,9 @@
                                                     <i class="bi bi-star-fill me-2"></i>
                                                     @promedio.ToString("0.0")
                                                 </span>
-
+                                                
                                             </div>
-
+                                            
                                             <p class="text-muted small fst-italic">
                                                 "@comentario.Texto"
                                             </p>
@@ -389,9 +439,8 @@
                                 </div>
                             }
 
-                        </div>
-
-                        <div class="tab-pane fade" id="contacto">
+                        </div>                       
+                        <div class="tab-pane fade" id="contacto-@Model.IdInstitucion">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="info-card">
@@ -404,20 +453,20 @@
 
                                         <div class="contact-item mb-1">
                                             <span class="text-muted small fw-bold text-uppercase me-2">Rector</span>
-                                            <span class="fw-bold text-dark">@Model.Contacto.RectorNombre @Model.Contacto.RectorApellido</span>
+                                            <span class="fw-bold text-dark">@Model.Contacto.RectorNombre.FirstOrDefault() @Model.Contacto.RectorApellido.FirstOrDefault()</span>
                                         </div>
 
                                         <div class="contact-item cursor-pointer mb-1">
                                             <div class="d-flex align-items-center gap-2">
                                                 <i class="bi bi-envelope text-primary"></i>
-                                                <span class="text-dark small fw-semibold">@Model.Contacto.RectorEmail</span>
+                                                <span class="text-dark small fw-semibold">@Model.Contacto.RectorEmail.FirstOrDefault()</span>
                                             </div>
                                         </div>
 
                                         <div class="contact-item mb-1">
                                             <div class="d-flex align-items-center gap-2">
                                                 <i class="bi bi-telephone text-primary"></i>
-                                                <span class="text-dark small fw-semibold">@Model.Contacto.RectorTelefono</span>
+                                                <span class="text-dark small fw-semibold">@Model.Contacto.RectorTelefono.FirstOrDefault()</span>
                                             </div>
                                         </div>
                                     </div>
@@ -458,7 +507,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="sedes">
+                        <div class="tab-pane fade" id="sedes-@Model.IdInstitucion">
                             @{
                                 var sedes = Model.Sedes.NombreSede.ToList();
                             }
@@ -469,15 +518,13 @@
                                     <ul class="nav nav-underline gap-4 p-0 mb-3" id="sedesTab" role="tablist" style="--bs-nav-link-color: var(--bs-gray-600); --bs-nav-underline-border-width: 3px;">
                                         @for (int i = 0; i < sedes.Count; i++)
                                         { 
-
-                                           
-
                                             var sede = sedes[i];
                                             var isActive = i == 0 ? "active" : "";
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link rounded-4 px-3 py-1.5 fw-semibold @isActive"
                                                         id="tab-@i"
                                                         data-bs-toggle="tab"
+                                                        data-tooltip="Presiona para ver la información de la sede"
                                                         data-bs-target="#panel-@i"
                                                         type="button"
                                                         role="tab"
@@ -508,6 +555,8 @@
 
                                             var telefono = Model.Sedes.Telefono.ElementAtOrDefault(i)
                                                 ?? new List<string>();
+                                            var ubicacion = Model.Sedes.Direccion.ElementAtOrDefault(i); 
+
                                             var isActive = i == 0 ? "show active" : "";
 
                                             <div class="tab-pane fade @isActive" id="panel-@i" role="tabpanel" aria-labelledby="tab-@i">
@@ -521,7 +570,7 @@
                                                                 </h3>
                                                                 <div class="text-secondary d-flex align-items-center gap-2">
                                                                     <i class="bi bi-geo-alt-fill text-primary fs-5"></i>
-                                                                    <span>@item</span>
+                                                                    <span>@ubicacion</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -657,10 +706,27 @@
             </div>
         </div>
     </div>
+    <div id="resenaContainer"></div>
+    <div class="modal fade" id="motivoModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Motivo del reporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="motivoInput" class="form-control" placeholder="Escriba el motivo"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="enviarReporte()">Reportar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 @functions {
-
     public string ObtenerClaseEstrella(decimal nota, int posicion)
     {
         if (nota >= posicion)
@@ -674,5 +740,112 @@
 
         return "bi bi-star star-inactive";
     }
-
 }
+
+<script>
+    async function abrirModalResena(idInstitucion) {
+        // 1. Pide el modal al servidor
+        const res = await fetch(`/Evaluacion/ModalResena?idInstitucion=${idInstitucion}`);
+        if (!res.ok) { alert('No se pudo cargar el formulario.'); return; }
+
+        // 2. Inyecta el HTML en el DOM
+        const html = await res.text();
+        document.getElementById('resenaContainer').innerHTML = html;
+
+        // 3. Re-ejecuta los scripts del partial (necesario para el fetch dinámico)
+        document.getElementById('resenaContainer').querySelectorAll('script').forEach(old => {
+            const s = document.createElement('script');
+            s.textContent = old.textContent;
+            document.body.appendChild(s);
+        });
+        $(`#modalInstitucion-${idInstitucion}`).modal('hide');
+    }
+
+
+
+    function reportarResena(idEvaluacion) {
+        evaluacionIdSeleccionada = idEvaluacion;
+        $('#motivoModal').modal('show'); // abre el modal para escribir motivo
+    }
+
+    async function enviarReporte() {
+        const motivo = document.getElementById("motivoInput").value;
+        if (!motivo) return;
+
+        const res = await fetch(`/Evaluacion/Reportar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idEvaluacion: evaluacionIdSeleccionada, motivoReporte: motivo })
+        });
+
+        $('#motivoModal').modal('hide'); // cierra el modal de motivo
+
+        if (res.ok) {
+            mostrarMensaje("La reseña fue reportada correctamente.");
+        } else {
+            mostrarMensaje("Error al reportar la reseña.");
+        }
+    }
+
+    function mostrarMensaje(mensaje) {
+        document.getElementById("mensajeModalBody").innerText = mensaje;
+        body.innerText = "";
+        $('#mensajeModal').modal('show'); // abre el modal de aviso
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const descripcionesMetodologia = {
+            "Gamificación": "Usa elementos de juegos como puntos, retos y recompensas para motivar el aprendizaje.",
+            "Educación Tradicional": "Modelo clásico centrado en el docente, con clases magistrales y evaluaciones escritas.",
+            "Aprendizaje Basado en Proyectos (ABP)": "Los estudiantes aprenden resolviendo proyectos reales o simulados.",
+            "Aprendizaje Cooperativo": "Fomenta el trabajo en equipo para alcanzar objetivos comunes.",
+            "Aprendizaje Basado en Competencias": "Se enfoca en desarrollar habilidades prácticas aplicables al mundo real.",
+            "Flipped Classroom (Aula Invertida)": "El estudiante estudia el contenido en casa y practica en clase con el docente.",
+            "Pedagogías alternativas": "Enfoques no convencionales como Montessori, Waldorf o Reggio Emilia."
+        };
+
+        // Asignar descripción según metodología y activar tooltip
+        document.querySelectorAll('[data-metodologia]').forEach(el => {
+            const metodologia = el.dataset.metodologia;
+            el.setAttribute('title', descripcionesMetodologia[metodologia] || metodologia);
+            new bootstrap.Tooltip(el);
+        });
+
+        document.querySelectorAll('[data-tooltip]').forEach(el => {
+            new bootstrap.Tooltip(el, {
+                title: el.dataset.tooltip,
+                placement: 'top',
+                trigger: 'hover'  // solo al pasar el mouse, no interfiere con el click del tab
+            });
+        });
+
+        // Activar el resto de tooltips normales
+        document.querySelectorAll('[data-bs-toggle="tooltip"]:not([data-metodologia])').forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
+    });
+       document.getElementById('modalInstitucion-@Model.IdInstitucion')
+        .addEventListener('show.bs.modal', async function () {
+            const res = await fetch('/Favorito/EsFavorito?idInstitucion=@Model.IdInstitucion');
+            const data = await res.json();
+            const btn = document.getElementById('btn-fav-@Model.IdInstitucion');
+            const icono = btn.querySelector('i');
+
+            if (data.esFavorito) {
+                icono.classList.remove('bi-heart');
+                icono.classList.add('bi-heart-fill');
+                btn.classList.remove('btn-outline-warning');
+                btn.classList.add('btn-warning');
+            } else {
+                icono.classList.remove('bi-heart-fill');
+                icono.classList.add('bi-heart');
+                btn.classList.remove('btn-warning');
+                btn.classList.add('btn-outline-warning');
+            }
+        });
+
+
+</script>
+

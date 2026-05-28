@@ -1,5 +1,236 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Dashboard Institución";
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+    var inst = ViewBag.Institucion as EduDirectory3.Models.Institucion;
 }
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --verde-claro: #2ecc71;
+        --fondo: #f4f7f6;
+        --card: #ffffff;
+        --texto: #1c2b22;
+        --gris: #6b7c74;
+        --borde: #e0ebe5;
+    }
+
+    body {
+        background: var(--fondo);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .dash-header {
+        background: linear-gradient(135deg, var(--verde) 0%, #145c38 100%);
+        color: white;
+        padding: 2rem 2.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 4px 20px rgba(26,122,74,0.25);
+    }
+
+        .dash-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .dash-header h1 {
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .dash-header p {
+            margin: 0.2rem 0 0;
+            opacity: 0.85;
+            font-size: 0.9rem;
+        }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--card);
+        border-radius: 14px;
+        padding: 1.5rem;
+        border: 1px solid var(--borde);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+
+        .stat-icon.verde {
+            background: #e8f5ee;
+        }
+
+        .stat-icon.azul {
+            background: #e8f0fe;
+        }
+
+        .stat-icon.naranja {
+            background: #fff3e0;
+        }
+
+        .stat-icon.morado {
+            background: #f3e5f5;
+        }
+
+    .stat-num {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--texto);
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--gris);
+        margin-top: 0.2rem;
+    }
+
+    .acciones-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .accion-card {
+        background: var(--card);
+        border-radius: 14px;
+        padding: 1.8rem;
+        border: 1px solid var(--borde);
+        text-decoration: none;
+        color: var(--texto);
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .accion-card:hover {
+            border-color: var(--verde);
+            box-shadow: 0 6px 24px rgba(26,122,74,0.15);
+            transform: translateY(-3px);
+            color: var(--texto);
+        }
+
+        .accion-card .icon {
+            font-size: 2rem;
+        }
+
+        .accion-card h5 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .accion-card p {
+            margin: 0;
+            font-size: 0.82rem;
+            color: var(--gris);
+        }
+
+    .alerta-exito {
+        background: #e8f5ee;
+        border: 1px solid #a3d9b8;
+        color: #1a5c35;
+        border-radius: 10px;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alerta-exito">✅ @TempData["Exito"]</div>
+}
+
+<div class="dash-header">
+    <img src="@(inst?.Imagen ?? "/img/default-school.png")" alt="Logo institución" />
+    <div>
+        <h1>@(inst?.Nombre ?? "Mi Institución")</h1>
+        <p>@(inst?.Tipo) · @(inst?.Metodologia) · @(inst?.Calendario)</p>
+        <p>⏰ @(inst?.HorarioAtencion)</p>
+    </div>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon verde">🏫</div>
+        <div>
+            <div class="stat-num">@ViewBag.TotalSedes</div>
+            <div class="stat-label">Sedes registradas</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon azul">✉️</div>
+        <div>
+            <div class="stat-num">@ViewBag.TotalMensajes</div>
+            <div class="stat-label">Mensajes recibidos</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon naranja">⭐</div>
+        <div>
+            <div class="stat-num">@ViewBag.PromedioGeneral</div>
+            <div class="stat-label">Promedio general</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon morado">📋</div>
+        <div>
+            <div class="stat-num">@ViewBag.TotalEvaluaciones</div>
+            <div class="stat-label">Evaluaciones recibidas</div>
+        </div>
+    </div>
+</div>
+
+<h5 style="color:var(--gris); font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:1rem;">Acciones rápidas</h5>
+
+<div class="acciones-grid">
+    <a class="accion-card" asp-action="Perfil">
+        <span class="icon">⚙️</span>
+        <h5>Editar Perfil</h5>
+        <p>Actualiza la información de tu institución</p>
+    </a>
+    <a class="accion-card" asp-action="Mensajes">
+        <span class="icon">💬</span>
+        <h5>Mensajes</h5>
+        <p>Revisa y responde los mensajes de usuarios</p>
+    </a>
+    <a class="accion-card" asp-action="Evaluaciones">
+        <span class="icon">⭐</span>
+        <h5>Evaluaciones</h5>
+        <p>Ve las valoraciones y comentarios recibidos</p>
+    </a>
+</div>
+

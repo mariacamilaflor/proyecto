@@ -36,25 +36,5 @@
     </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-4">
-        <a asp-controller="Usuarios" asp-action="Index" class="card border-0 shadow-sm p-3 d-block text-decoration-none text-dark">
-            <i class="bi bi-people me-2 text-primary"></i>Gestionar usuarios
-        </a>
-    </div>
-    <div class="col-md-4">
-        <a asp-controller="Instituciones" asp-action="Index" class="card border-0 shadow-sm p-3 d-block text-decoration-none text-dark">
-            <i class="bi bi-building me-2 text-success"></i>Gestionar instituciones
-        </a>
-    </div>
-    <div class="col-md-4">
-        <a asp-controller="Comentarios" asp-action="Index" class="card border-0 shadow-sm p-3 d-block text-decoration-none text-dark">
-            <i class="bi bi-flag me-2 text-danger"></i>Ver reportes
-            @if (ViewBag.TotalReportados > 0)
-            {
-                <span class="badge bg-danger ms-1">@ViewBag.TotalReportados</span>
-            }
-        </a>
-    </div>
-</div>
+
 

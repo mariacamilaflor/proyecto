@@ -13,5 +13,6 @@
         public List<decimal> Infraestructura { get; set; } = new();
         public double PromedioRating { get; set; }
         public int TotalReseñas { get; set; }
+        public List<int> IdEvaluacion { get; internal set; }
     }
 }

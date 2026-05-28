@@ -1,0 +1,229 @@
+﻿@model IEnumerable<EduDirectory3.Models.Sede>
+@{
+    ViewData["Title"] = "Mis Sedes";
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+    var inst = ViewBag.Institucion as EduDirectory3.Models.Institucion;
+}
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --verde-claro: #e8f5ee;
+        --borde: #e0ebe5;
+        --gris: #6b7c74;
+        --texto: #1c2b22;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.8rem;
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--texto);
+        }
+
+        .page-header p {
+            margin: 0;
+            color: var(--gris);
+            font-size: 0.88rem;
+        }
+
+    .btn-nueva-sede {
+        background: var(--verde);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.4rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+        .btn-nueva-sede:hover {
+            background: #145c38;
+            color: white;
+        }
+
+    .sede-card {
+        background: #fff;
+        border: 1px solid var(--borde);
+        border-radius: 14px;
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        transition: all 0.2s;
+    }
+
+        .sede-card:hover {
+            border-color: var(--verde);
+            box-shadow: 0 4px 16px rgba(26,122,74,0.12);
+        }
+
+    .sede-nombre {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--texto);
+        margin-bottom: 0.5rem;
+    }
+
+    .sede-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .badge-item {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        font-weight: 600;
+        background: var(--verde-claro);
+        color: var(--verde);
+    }
+
+    .sede-acciones {
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    .btn-ver {
+        font-size: 0.8rem;
+        color: var(--verde);
+        border: 1.5px solid var(--verde);
+        border-radius: 8px;
+        padding: 0.3rem 0.9rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .btn-ver:hover {
+            background: var(--verde);
+            color: white;
+        }
+
+    .btn-eliminar {
+        font-size: 0.8rem;
+        color: #dc2626;
+        border: 1.5px solid #fee2e2;
+        border-radius: 8px;
+        padding: 0.3rem 0.9rem;
+        font-weight: 600;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-eliminar:hover {
+            background: #fee2e2;
+        }
+
+    .vacio {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gris);
+    }
+
+    .alerta-exito {
+        background: #e8f5ee;
+        border: 1px solid #a3d9b8;
+        color: #1a5c35;
+        border-radius: 10px;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-tabs-custom {
+        border-bottom: 2px solid var(--borde);
+        margin-bottom: 1.5rem;
+    }
+
+        .nav-tabs-custom .nav-link {
+            color: var(--gris);
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 0.6rem 1rem;
+        }
+
+            .nav-tabs-custom .nav-link.active {
+                color: var(--verde);
+                border-bottom-color: var(--verde);
+            }
+
+            .nav-tabs-custom .nav-link:hover {
+                color: var(--verde);
+            }
+</style>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alerta-exito">@TempData["Exito"]</div>
+}
+
+<div class="page-header">
+    <div>
+        <h2>Sedes</h2>
+        <p>@Model.Count() sedes registradas para @inst?.Nombre</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="InfoInstitucion" class="btn-ver">Info institución</a>
+        <a asp-action="Crear" class="btn-nueva-sede">+ Nueva sede</a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="vacio">
+        <div style="font-size:3rem; margin-bottom:1rem;"></div>
+        <h5>No tienes sedes registradas</h5>
+        <p>Crea tu primera sede para comenzar.</p>
+        <a asp-action="Crear" class="btn-nueva-sede">Crear primera sede</a>
+    </div>
+}
+else
+{
+    foreach (var sede in Model)
+    {
+        <div class="sede-card">
+            <div class="sede-nombre">@sede.NombreSede</div>
+            <div class="sede-badges">
+                @if (sede.Ubicacion.Any())
+                {
+                    <span class="badge-item">@sede.Ubicacion.First().Barrio</span>
+                }
+                @foreach (var niv in sede.Nivel.Take(3))
+                {
+                    <span class="badge-item">@niv.NombreNivel</span>
+                }
+                @foreach (var jor in sede.Jornada.Take(2))
+                {
+                    <span class="badge-item">@jor.NombreJornada</span>
+                }
+                @if (sede.Telefono.Any())
+                {
+                    <span class="badge-item">@sede.Telefono.Count tel.</span>
+                }
+            </div>
+            <div class="sede-acciones">
+                <a asp-action="Detalle" asp-route-id="@sede.IdSede" class="btn-ver">Ver / Editar</a>
+                <form asp-action="Eliminar" method="post" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar la sede @sede.NombreSede? Esta acción no se puede deshacer.')">
+                    <input type="hidden" name="id" value="@sede.IdSede" />
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    }
+}
+

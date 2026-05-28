@@ -292,6 +292,65 @@ namespace EduDirectory3.Migrations
                     b.ToTable("Evaluacion");
                 });
 
+            modelBuilder.Entity("EduDirectory3.Models.Evento", b =>
+                {
+                    b.Property<int>("IdEvento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEvento"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdInstitucion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Lugar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdEvento");
+
+                    b.HasIndex("IdInstitucion");
+
+                    b.ToTable("Evento");
+                });
+
+            modelBuilder.Entity("EduDirectory3.Models.Favorito", b =>
+                {
+                    b.Property<int>("IdFavorito")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFavorito"));
+
+                    b.Property<DateTime>("FechaAgregado")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdInstitucion")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdFavorito");
+
+                    b.HasIndex("IdInstitucion");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Favorito");
+                });
+
             modelBuilder.Entity("EduDirectory3.Models.Filtro", b =>
                 {
                     b.Property<int>("IdFiltro")
@@ -779,6 +838,63 @@ namespace EduDirectory3.Migrations
                     b.ToTable("Usuario");
                 });
 
+            modelBuilder.Entity("EduDirectory3.ViewModels.InstitucionResultado", b =>
+                {
+                    b.Property<string>("Barrio")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Calendario")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Comuna")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Costo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HorarioAtencion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdInstitucion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Metodologia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NombreSede")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NumeroTelefono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaginaWeb")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -859,12 +975,10 @@ namespace EduDirectory3.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -901,12 +1015,10 @@ namespace EduDirectory3.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -999,6 +1111,36 @@ namespace EduDirectory3.Migrations
                     b.Navigation("IdSedeNavigation");
 
                     b.Navigation("IdUsuarioNavigation");
+                });
+
+            modelBuilder.Entity("EduDirectory3.Models.Evento", b =>
+                {
+                    b.HasOne("EduDirectory3.Models.Institucion", "Institucion")
+                        .WithMany()
+                        .HasForeignKey("IdInstitucion")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Institucion");
+                });
+
+            modelBuilder.Entity("EduDirectory3.Models.Favorito", b =>
+                {
+                    b.HasOne("EduDirectory3.Models.Institucion", "Institucion")
+                        .WithMany()
+                        .HasForeignKey("IdInstitucion")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduDirectory3.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Institucion");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("EduDirectory3.Models.Filtro", b =>

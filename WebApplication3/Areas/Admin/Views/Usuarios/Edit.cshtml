@@ -1,0 +1,415 @@
+﻿@model EduDirectory3.Models.Usuario
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <div class="header-left">
+            <a href="@Url.Action("Index", "Usuarios", new { area = "Admin" })" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </a>
+            <div>
+                <h1 class="page-title">Editar Usuario</h1>
+                <p class="page-subtitle">@Model.Nombre @Model.Apellido — #@Model.IdUsuario</p>
+            </div>
+        </div>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p class="mb-0">@error.ErrorMessage</p>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="form-card">
+        <form action="@Url.Action("Edit", "Usuarios", new { area = "Admin", id = Model.IdUsuario })" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-section">
+                <h2 class="section-title">Información Personal</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombre" value="@Model.Nombre" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" name="apellido" value="@Model.Apellido" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form-section">
+                <h2 class="section-title">Credenciales</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" name="email" value="@Model.Correo" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            Nueva Contraseña
+                            <span class="label-hint">— dejar vacío para no cambiar</span>
+                        </label>
+                        <input type="password" name="nuevaPassword" class="form-control"
+                               placeholder="••••••••" autocomplete="new-password" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form-section">
+                <h2 class="section-title">Rol</h2>
+                <div class="rol-selector">
+                    <label class="rol-option @(Model.Rol == "Usuario" ? "active" : "")">
+                        <input type="radio" name="rol" value="Usuario" @(Model.Rol == "Usuario" ? "checked" : "") />
+                        <div class="rol-icon rol-usuario-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <span class="rol-label">Usuario</span>
+                    </label>
+                    <label class="rol-option @(Model.Rol == "Institucion" ? "active" : "")">
+                        <input type="radio" name="rol" value="Institucion" @(Model.Rol == "Institucion" ? "checked" : "") />
+                        <div class="rol-icon rol-institucion-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </div>
+                        <span class="rol-label">Institución</span>
+                    </label>
+                    <label class="rol-option @(Model.Rol == "Admin" ? "active" : "")">
+                        <input type="radio" name="rol" value="Admin" @(Model.Rol == "Admin" ? "checked" : "") />
+                        <div class="rol-icon rol-admin-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <span class="rol-label">Admin</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="@Url.Action("Index", "Usuarios", new { area = "Admin" })" class="btn btn-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    :root {
+        --bg: #0f1117;
+        --surface: #181c27;
+        --surface2: #1e2333;
+        --border: #2a2f45;
+        --accent: #4f46e5;
+        --accent-ok: #3ecf8e;
+        --accent-warn: #f59e0b;
+        --accent-red: #e05c5c;
+        --text: #e2e8f0;
+        --text-muted: #64748b;
+        --radius: 10px;
+    }
+
+    .page-wrapper {
+        padding: 2rem;
+        max-width: 760px;
+        margin: 0 auto;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: var(--text);
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .back-btn {
+        width: 36px;
+        height: 36px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all .15s;
+        flex-shrink: 0;
+    }
+
+        .back-btn:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 .2rem;
+        letter-spacing: -.02em;
+    }
+
+    .page-subtitle {
+        font-size: .85rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .alert {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .9rem 1.1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1.5rem;
+        font-size: .875rem;
+    }
+
+    .alert-danger {
+        background: rgba(224,92,92,.1);
+        border: 1px solid rgba(224,92,92,.25);
+        color: var(--accent-red);
+    }
+
+    .alert p {
+        margin: 0;
+    }
+
+    .form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    .form-section {
+        padding: 1.5rem;
+    }
+
+    .section-title {
+        font-size: .8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--text-muted);
+        margin: 0 0 1.1rem;
+    }
+
+    .divider {
+        height: 1px;
+        background: var(--border);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @@media (max-width: 600px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: .4rem;
+    }
+
+    .form-label {
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .label-hint {
+        font-weight: 400;
+        color: var(--text-muted);
+    }
+
+    .form-control {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: .6rem .85rem;
+        color: var(--text);
+        font-size: .9rem;
+        outline: none;
+        transition: border-color .15s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .form-control:focus {
+            border-color: var(--accent);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+    .rol-selector {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .rol-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .5rem;
+        padding: 1rem 1.5rem;
+        background: var(--surface2);
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all .2s;
+        flex: 1;
+        min-width: 100px;
+    }
+
+        .rol-option input[type="radio"] {
+            display: none;
+        }
+
+        .rol-option:hover {
+            border-color: #4f46e5;
+        }
+
+        .rol-option.active {
+            border-color: var(--accent);
+            background: rgba(79,70,229,.08);
+        }
+
+    .rol-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .rol-usuario-icon {
+        background: rgba(62,207,142,.12);
+        color: var(--accent-ok);
+    }
+
+    .rol-institucion-icon {
+        background: rgba(245,158,11,.1);
+        color: var(--accent-warn);
+    }
+
+    .rol-admin-icon {
+        background: rgba(224,92,92,.1);
+        color: var(--accent-red);
+    }
+
+    .rol-label {
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .75rem;
+        padding: 1.25rem 1.5rem;
+        background: var(--surface2);
+        border-top: 1px solid var(--border);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .55rem 1.1rem;
+        border: none;
+        border-radius: 7px;
+        font-size: .875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity .15s, transform .1s;
+        text-decoration: none;
+    }
+
+        .btn:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+    }
+</style>
+
+<script>
+    // Activar visualmente la opción de rol seleccionada al hacer clic
+    document.querySelectorAll('.rol-option').forEach(opt => {
+        opt.addEventListener('click', function () {
+            document.querySelectorAll('.rol-option').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+

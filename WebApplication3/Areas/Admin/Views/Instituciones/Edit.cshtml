@@ -40,9 +40,8 @@
                     <label asp-for="Tipo" class="form-label fw-semibold">Tipo</label>
                     <select asp-for="Tipo" class="form-select">
                         <option value="">Selecciona...</option>
-                        <option value="Tradicional">Tradicional</option>
-                        <option value="Público">Público</option>
-                        <option value="Privado">Privado</option>
+                        <option value="Pública">Pública</option>
+                        <option value="Privada">Privada</option>
 
                     </select>
                 </div>
@@ -50,11 +49,14 @@
                 <div class="col-md-4">
                     <label asp-for="Metodologia" class="form-label fw-semibold">Metodología</label>
                     <select asp-for="Metodologia" class="form-select">
-                        <option value="">Selecciona...</option>
-                        <option value="Tradicional">Tradicional</option>
-                        <option value="Bilingüe">Bilingüe</option>
-                        <option value="Montessori">Montessori</option>
-                        <option value="Constructivista">Constructivista</option>
+                        <option value="">-- Seleccione --</option>
+                        <option value="Gamificación">Gamificación</option>
+                        <option value="Educación Tradicional">Educación Tradicional</option>
+                        <option value="Aprendizaje Basado en Proyectos (ABP)">Aprendizaje Basado en Proyectos (ABP)</option>
+                        <option value="Aprendizaje Cooperativo">Aprendizaje Cooperativo</option>
+                        <option value="Aprendizaje Basado en Competencias">Aprendizaje Basado en Competencias</option>
+                        <option value="Flipped Classroom (Aula Invertida)">Flipped Classroom (Aula Invertida)</option>
+                        <option value="Pedagogías alternativas">Pedagogías alternativas</option>
                        
                     </select>
                 </div>
@@ -82,7 +84,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label asp-for="IdUsuario" class="form-label fw-semibold">Usuario asignado</label>
+                    <label asp-for="IdUsuarioNavigation" class="form-label fw-semibold">Usuario asignado</label>
                     <select asp-for="IdUsuario" class="form-select">
                         <option value="">Sin asignar</option>
                         @foreach (var u in ViewBag.Usuarios as List<EduDirectory3.Models.Usuario> ?? new())

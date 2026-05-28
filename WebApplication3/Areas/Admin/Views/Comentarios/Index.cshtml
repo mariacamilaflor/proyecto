@@ -1,0 +1,462 @@
+﻿@model IEnumerable<EduDirectory3.Models.Evaluacion>
+@{
+    ViewData["Title"] = "Comentarios Reportados";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-left">
+            <div class="header-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <div>
+                <p class="page-subtitle">
+                    @Model.Count() reporte@(Model.Count() != 1 ? "s" : "") pendiente@(Model.Count() != 1 ? "s" : "") de revisión
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+            @TempData["Exito"]
+        </div>
+    }
+
+    <!-- Content -->
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+            </div>
+            <h3>Sin reportes pendientes</h3>
+            <p>No hay comentarios reportados en este momento.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Usuario</th>
+                                <th>Sede</th>
+                                <th>Comentario</th>
+                                <th>Motivo del Reporte</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span>@item.IdEvaluacion</span>
+                                    </td>
+                                    <td class="fw-semibold">
+                                        <div class="user-cell">
+                                            <div class="user-avatar">
+                                                @((item.IdUsuarioNavigation?.Nombre ?? "?").Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div class="user-info">
+                                                <span>
+                                                    @(item.IdUsuarioNavigation?.Nombre ?? "Usuario desconocido")
+                                                </span>
+                                                <span class="user-email">
+                                                    @(item.IdUsuarioNavigation?.Correo ?? "—")
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="sede-tag">
+                                            @(item.IdSedeNavigation?.NombreSede ?? "—")
+                                        </span>
+                                    </td>
+                                    <td class="comment-cell">
+                                        <p class="text-black">@item.Comentario</p>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.MotivoReporte))
+                                        {
+                                            <span class="motivo-badge">@item.MotivoReporte</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Sin motivo</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <!-- Desmarcar reporte -->
+                                            <form action="@Url.Action("Desmarcar", "Comentarios", new { area = "Admin", id = item.IdEvaluacion })"
+                                                  method="post"
+                                                  onsubmit="return confirm('¿Descartar este reporte y mantener el comentario?')">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline" title="Descartar reporte">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
+                                                    Descartar
+                                                </button>
+                                            </form>
+
+                                            <!-- Eliminar comentario -->
+                                            <form action="@Url.Action("Delete", "Comentarios", new { area = "Admin", id = item.IdEvaluacion })"
+                                                  method="post"
+                                                  onsubmit="return confirm('¿Eliminar este comentario permanentemente?')">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger" title="Eliminar comentario">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6M14 11v6" />
+                                                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    /* ── Variables ── */
+    :root {
+        --bg: #0f1117;
+        --surface: #181c27;
+        --surface2: #1e2333;
+        --border: #2a2f45;
+        --accent: #e05c5c;
+        --accent-ok: #3ecf8e;
+        --accent-warn: #f59e0b;
+        --text: #e2e8f0;
+        --text-muted: #64748b;
+        --radius: 10px;
+    }
+
+    /* ── Layout ── */
+    .page-wrapper {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: var(--text);
+    }
+
+    /* ── Header ── */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.75rem;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(224, 92, 92, 0.12);
+        border: 1px solid rgba(224, 92, 92, 0.25);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        flex-shrink: 0;
+    }
+
+        .header-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 .2rem;
+        letter-spacing: -.02em;
+    }
+
+    .page-subtitle {
+        font-size: .85rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* ── Alert ── */
+    .alert {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .85rem 1.1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1.5rem;
+        font-size: .9rem;
+    }
+
+    .alert-success {
+        background: rgba(62, 207, 142, .1);
+        border: 1px solid rgba(62, 207, 142, .25);
+        color: var(--accent-ok);
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-muted);
+    }
+
+    .empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.2rem;
+        background: rgba(62, 207, 142, .08);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-ok);
+    }
+
+        .empty-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin: 0 0 .4rem;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: .9rem;
+    }
+
+    /* ── Table card ── */
+    .table-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .comments-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+    }
+
+        .comments-table thead th {
+            background: var(--surface2);
+            padding: .85rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .comments-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+            .comments-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .comments-table tbody tr:hover {
+                background: var(--surface2);
+            }
+
+        .comments-table td {
+            padding: .9rem 1rem;
+            vertical-align: middle;
+        }
+
+    /* ── Cells ── */
+    .id-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: .75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .user-avatar {
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: .8rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .user-name {
+        display: block;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .user-email {
+        display: block;
+        font-size: .78rem;
+        color: var(--text-muted);
+    }
+
+    .sede-tag {
+        display: inline-block;
+        padding: .25rem .7rem;
+        background: rgba(79, 70, 229, .12);
+        border: 1px solid rgba(79, 70, 229, .25);
+        border-radius: 20px;
+        font-size: .78rem;
+        font-weight: 500;
+        color: #a5b4fc;
+        white-space: nowrap;
+    }
+
+    .comment-cell {
+        max-width: 260px;
+    }
+
+    .comment-text {
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: var(--text);
+        line-height: 1.5;
+    }
+
+    .motivo-badge {
+        display: inline-block;
+        padding: .25rem .75rem;
+        background: rgba(245, 158, 11, .1);
+        border: 1px solid rgba(245, 158, 11, .25);
+        border-radius: 20px;
+        font-size: .78rem;
+        font-weight: 500;
+        color: var(--accent-warn);
+    }
+
+    .text-muted {
+        color: var(--text-muted);
+        font-size: .82rem;
+    }
+
+    /* ── Buttons ── */
+    .action-buttons {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .4rem .85rem;
+        border: none;
+        border-radius: 6px;
+        font-size: .8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity .15s, transform .1s;
+        white-space: nowrap;
+    }
+
+        .btn:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+    .btn-outline {
+        background: rgba(62, 207, 142, .1);
+        border: 1px solid rgba(62, 207, 142, .3);
+        color: var(--accent-ok);
+    }
+
+    .btn-danger {
+        background: rgba(224, 92, 92, .12);
+        border: 1px solid rgba(224, 92, 92, .3);
+        color: var(--accent);
+    }
+</style>
+

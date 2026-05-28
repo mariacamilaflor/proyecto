@@ -1,0 +1,279 @@
+﻿@model IEnumerable<EduDirectory3.Models.Evaluacion>
+@{
+    ViewData["Title"] = "Evaluaciones";
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+
+    decimal Prom(IEnumerable<EduDirectory3.Models.Evaluacion> evs, Func<EduDirectory3.Models.Calificacion, decimal> campo)
+    {
+        var vals = evs.SelectMany(e => e.Calificacion).Select(campo).ToList();
+        return vals.Any() ? Math.Round(vals.Average(), 1) : 0;
+    }
+}
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --fondo: #f4f7f6;
+        --card: #ffffff;
+        --texto: #1c2b22;
+        --gris: #6b7c74;
+        --borde: #e0ebe5;
+        --amarillo: #f59e0b;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.8rem;
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--texto);
+        }
+
+        .page-header p {
+            margin: 0;
+            color: var(--gris);
+            font-size: 0.88rem;
+        }
+
+    /* Promedios por categoría */
+    .promedios-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .prom-card {
+        background: var(--card);
+        border: 1px solid var(--borde);
+        border-radius: 12px;
+        padding: 1.2rem;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .prom-num {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--verde);
+        line-height: 1;
+    }
+
+    .prom-estrellas {
+        color: var(--amarillo);
+        font-size: 0.9rem;
+        margin: 0.3rem 0;
+    }
+
+    .prom-label {
+        font-size: 0.75rem;
+        color: var(--gris);
+        font-weight: 600;
+    }
+
+    /* Evaluaciones */
+    .eval-card {
+        background: var(--card);
+        border: 1px solid var(--borde);
+        border-radius: 14px;
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .eval-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+    }
+
+    .eval-usuario {
+        font-weight: 700;
+        color: var(--texto);
+    }
+
+    .eval-sede {
+        font-size: 0.78rem;
+        background: #e8f5ee;
+        color: var(--verde);
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .eval-comentario {
+        font-size: 0.88rem;
+        color: #3a4a40;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        font-style: italic;
+    }
+
+    .califs-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+    }
+
+    .calif-item {
+        background: var(--fondo);
+        border-radius: 8px;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.78rem;
+    }
+
+        .calif-item .cat {
+            color: var(--gris);
+            margin-bottom: 0.2rem;
+        }
+
+        .calif-item .val {
+            font-weight: 700;
+            color: var(--verde);
+            font-size: 0.95rem;
+        }
+
+    .badge-reportado {
+        background: #fee2e2;
+        color: #dc2626;
+        border-radius: 20px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .estrellas {
+        color: var(--amarillo);
+    }
+
+    .vacio {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gris);
+    }
+
+    .btn-volver {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.5rem 1.2rem;
+        font-size: 0.88rem;
+        color: var(--gris);
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-volver:hover {
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <h2>⭐ Evaluaciones</h2>
+        <p>@Model.Count() evaluaciones recibidas</p>
+    </div>
+    <a asp-action="Index" class="btn-volver">← Dashboard</a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="promedios-grid">
+        @{
+            var cats = new[]
+            {
+                new { Label = "Ambiente Escolar", Val = Prom(Model, c => c.CalificacionAmbienteEscolar) },
+                new { Label = "Metodología",      Val = Prom(Model, c => c.CalificacionMetodologia) },
+                new { Label = "Seguridad",        Val = Prom(Model, c => c.CalificacionSeguridad) },
+                new { Label = "Profesores",       Val = Prom(Model, c => c.CalificacionProfesores) },
+                new { Label = "Extracurriculares",Val = Prom(Model, c => c.CalificacionActividadesExtracurriculares) },
+                new { Label = "Infraestructura",  Val = Prom(Model, c => c.CalificacionInfraestructura) },
+            };
+        }
+        @foreach (var cat in cats)
+        {
+            var estrellas = (int)Math.Round((double)cat.Val / 2);
+            <div class="prom-card">
+                <div class="prom-num">@cat.Val</div>
+                <div class="prom-estrellas">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <span>@(i < estrellas ? "★" : "☆")</span>
+                    }
+                </div>
+                <div class="prom-label">@cat.Label</div>
+            </div>
+        }
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="vacio">
+        <div style="font-size:3rem; margin-bottom:1rem;">📝</div>
+        <h5>Sin evaluaciones aún</h5>
+        <p>Cuando los usuarios evalúen tu institución, aparecerán aquí.</p>
+    </div>
+}
+else
+{
+    foreach (var eval in Model)
+    {
+        var califs = eval.Calificacion.FirstOrDefault();
+        <div class="eval-card">
+            <div class="eval-header">
+                <div>
+                    <div class="eval-usuario">
+                        👤 @eval.IdUsuarioNavigation?.Nombre @eval.IdUsuarioNavigation?.Apellido
+                    </div>
+                    <div style="font-size:0.82rem; color:var(--gris);">@eval.IdUsuarioNavigation?.Correo</div>
+                </div>
+                <div class="d-flex flex-column align-items-end gap-1">
+                    <span class="eval-sede">@eval.IdSedeNavigation?.NombreSede</span>
+                    @if (eval.Reportado == true)
+                    {
+                        <span class="badge-reportado">⚠️ Reportado</span>
+                    }
+                </div>
+            </div>
+
+            <div class="eval-comentario">"@eval.Comentario"</div>
+
+            @if (califs != null)
+            {
+                <div class="califs-grid">
+                    <div class="calif-item">
+                        <div class="cat">Ambiente Escolar</div>
+                        <div class="val">@califs.CalificacionAmbienteEscolar / 10</div>
+                    </div>
+                    <div class="calif-item">
+                        <div class="cat">Metodología</div>
+                        <div class="val">@califs.CalificacionMetodologia / 10</div>
+                    </div>
+                    <div class="calif-item">
+                        <div class="cat">Seguridad</div>
+                        <div class="val">@califs.CalificacionSeguridad / 10</div>
+                    </div>
+                    <div class="calif-item">
+                        <div class="cat">Profesores</div>
+                        <div class="val">@califs.CalificacionProfesores / 10</div>
+                    </div>
+                    <div class="calif-item">
+                        <div class="cat">Extracurriculares</div>
+                        <div class="val">@califs.CalificacionActividadesExtracurriculares / 10</div>
+                    </div>
+                    <div class="calif-item">
+                        <div class="cat">Infraestructura</div>
+                        <div class="val">@califs.CalificacionInfraestructura / 10</div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}

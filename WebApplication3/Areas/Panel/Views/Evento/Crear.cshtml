@@ -1,0 +1,47 @@
+﻿@model EduDirectory3.Models.Evento
+@{
+    ViewData["Title"] = "Nuevo Evento";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4" style="max-width:560px;">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div style="width:44px;height:44px;background:#e0f2fe;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-calendar-plus-fill" style="color:#0369a1;font-size:20px;"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-0">Nuevo Evento</h4>
+            <small class="text-muted">Completa la información del evento</small>
+        </div>
+    </div>
+
+    <form asp-area="Panel" asp-controller="Evento" asp-action="Crear" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Título</label>
+            <input asp-for="Titulo" class="form-control" placeholder="Ej: Día de puertas abiertas" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea asp-for="Descripcion" class="form-control" rows="4"
+                      placeholder="Describe el evento..."></textarea>
+        </div>
+
+        <div class="row">
+            <div class="col mb-3">
+                <label class="form-label fw-semibold">Fecha y hora</label>
+                <input asp-for="Fecha" type="datetime-local" class="form-control" />
+            </div>
+            <div class="col mb-3">
+                <label class="form-label fw-semibold">Lugar</label>
+                <input asp-for="Lugar" class="form-control" placeholder="Ej: Sede principal" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-calendar-check me-2"></i> Publicar evento
+        </button>
+    </form>
+</div>

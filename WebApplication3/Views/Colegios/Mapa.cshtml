@@ -1,17 +1,597 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using EduDirectory3.ViewModels
+@model List<ColegioResultadoViewModel>
 @{
+    ViewData["Title"] = "Mapa de instituciones";
+    Layout = "_Layout";
 }
-const mapa = L.map('mapa').setView([6.3294, -75.5592], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
 
-const sedes = @Html.Raw(ViewBag.SedesJson);
-sedes.forEach(s => {
-L.marker([s.lat, s.lng]).addTo(mapa)
-.bindPopup(`<strong>${s.institucion}</strong>
-<br />
-${s.direccion}
-<br />
-<a href="/Colegios/Detalle/${s.idInstitucion}">Ver detalle</a>`);
-});
+<style>
+    .mapa-wrapper {
+        display: flex;
+        height: calc(100vh - 70px);
+        overflow: hidden;
+    }
+
+    .panel-izquierdo {
+        width: 370px;
+        min-width: 370px;
+        background: #fff;
+        border-right: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        background: #1a1a2e;
+        color: white;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .panel-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .panel-header small {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+    .btn-geo {
+        background: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+    .panel-body {
+        padding: 16px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .rango-card {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+        .rango-card h6 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+    .rango-valor {
+        background: #1a73e8;
+        color: white;
+        border-radius: 6px;
+        padding: 2px 10px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-left: auto;
+    }
+
+    input[type=range] {
+        width: 100%;
+        accent-color: #1a73e8;
+    }
+
+    .rango-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 4px;
+    }
+
+    .inst-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .inst-header h6 {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+    .inst-count {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    .inst-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+        .inst-card:hover {
+            border-color: #1a73e8;
+            box-shadow: 0 2px 8px rgba(26,115,232,0.1);
+        }
+
+        .inst-card .badge-tipo {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+    .badge-publico {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .badge-privado {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .inst-nombre {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 6px 0 4px;
+    }
+
+    .inst-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 6px;
+    }
+
+    .inst-dist {
+        color: #1a73e8;
+        font-weight: 600;
+    }
+
+    .leyenda {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 12px 16px;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 10;
+        min-width: 160px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+        .leyenda h6 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+    .leyenda-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    #mapa-container {
+        flex: 1;
+        position: relative;
+    }
+
+    #mapa {
+        width: 100%;
+        height: 100%;
+    }
+
+    .sin-ubicacion {
+        text-align: center;
+        padding: 30px 16px;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+</style>
+
+<div class="mapa-wrapper">
+    <!-- Panel izquierdo -->
+    <div class="panel-izquierdo">
+        <div class="panel-header">
+            <div style="background:#1a73e8;border-radius:8px;padding:8px;display:flex">
+                <i class="bi bi-geo-alt-fill" style="font-size:18px"></i>
+            </div>
+            <div>
+                <h5>EduMapa</h5>
+                <small>Localizador de instituciones</small>
+            </div>
+            <button class="btn-geo" data-bs-toggle="tooltip" title="Presiona para obtener tu ubicación" onclick="geolocalizarme()">
+                <i class="bi bi-crosshair"></i> Geolocalizarme
+            </button>
+        </div>
+
+        <div class="panel-body">
+            <!-- Rango -->
+            <div class="rango-card">
+                <h6>
+                    <i class="bi bi-sliders" style="color:#1a73e8"></i>
+                    Rango de Cercanía
+                    <span class="rango-valor" id="rango-label">5.0 km</span>
+                </h6>
+                <input type="range" min="1" max="15" step="0.5" value="5" id="radio-slider" oninput="cambiarRadio(this.value)">
+                <div class="rango-labels"><span>1 km</span><span>5 km</span><span>10 km</span><span>15 km</span></div>
+            </div>
+
+            <!-- Lista instituciones -->
+            <div class="inst-header">
+                <div>
+                    <h6>Instituciones Encontradas</h6>
+                    <div class="inst-count" id="inst-count">Activa la ubicación para ver instituciones cercanas</div>
+                </div>
+            </div>
+
+            <div id="lista-inst">
+                <div class="sin-ubicacion">
+                    <i class="bi bi-geo-alt" style="font-size:32px;display:block;margin-bottom:8px"></i>
+                    Presiona "Geolocalizarme" para ver las instituciones más cercanas a ti
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mapa -->
+    <div id="mapa-container">
+        <div id="mapa"></div>
+        <div class="leyenda">
+            <h6>Referencias</h6>
+            <div class="leyenda-item"><div class="dot" style="background:#ea4335"></div> Tu Ubicación</div>
+            <div class="leyenda-item"><div class="dot" style="background:#1a73e8"></div> Pública</div>
+            <div class="leyenda-item"><div class="dot" style="background:#f59e0b"></div> Privada</div>
+        </div>
+        <div id="info-ruta" style="display:none;position:absolute;bottom:16px;left:16px;right:16px;background:white;border-radius:10px;padding:12px 16px;box-shadow:0 2px 12px rgba(0,0,0,0.15);align-items:center;gap:16px;z-index:10">
+            <div style="display:flex;gap:16px;flex:1">
+                <div style="text-align:center">
+                    <div style="font-size:11px;color:#64748b;text-transform:uppercase;font-weight:600">Distancia</div>
+                    <div style="font-size:18px;font-weight:700;color:#1a73e8" id="ruta-distancia">--</div>
+                </div>
+                <div style="text-align:center">
+                    <div style="font-size:11px;color:#64748b;text-transform:uppercase;font-weight:600">Tiempo aprox.</div>
+                    <div style="font-size:18px;font-weight:700;color:#1a73e8" id="ruta-tiempo">--</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;margin-left:auto">
+                    <select id="modo-transporte" onchange="cambiarModo()" style="border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;font-size:13px">
+                        <option value="DRIVING">🚗 Auto</option>
+                        <option value="WALKING">🚶 A pie</option>
+                        <option value="TRANSIT">🚌 Bus</option>
+                    </select>
+                    <button onclick="limpiarRuta()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">
+                        ✕ Limpiar ruta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modals *@
+@foreach (var col in Model)
+{
+    <partial name="Detalle" model="col" view-data='new ViewDataDictionary(ViewData) { { "MostrarBoton", false } }' />
+}
+<script>
+    var todasLasSedes = @Html.Raw(ViewBag.SedesJson);
+    var map, marcadorUsuario, circulo, infoWindow;
+    var marcadores = [];
+    var latUsuario = null, lngUsuario = null;
+    var radioKm = 5;
+    var directionsService, directionsRenderer;
+    var ultimoDestino = null;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('mapa'), {
+            center: { lat: 6.3373, lng: -75.5579 },
+            zoom: 13,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false
+        });
+
+        // Inicializar directions
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            polylineOptions: {
+                strokeColor: '#1a73e8',
+                strokeWeight: 5,
+                strokeOpacity: 0.8
+            },
+            suppressMarkers: false
+        });
+        directionsRenderer.setMap(map);
+
+        infoWindow = new google.maps.InfoWindow();
+        mostrarTodosLosMarcadores();
+    }
+
+    function trazarRuta(latDest, lngDest) {
+        infoWindow.close();
+        ultimoDestino = { lat: latDest, lng: lngDest };
+        calcularRuta();
+        directionsService.route({
+            origin: { lat: latUsuario, lng: lngUsuario },
+            destination: { lat: latDest, lng: lngDest },
+            travelMode: google.maps.TravelMode.DRIVING
+        }, function (result, status) {
+            if (status === 'OK') {
+                directionsRenderer.setDirections(result);
+
+                // Mostrar info de la ruta
+                var leg = result.routes[0].legs[0];
+                document.getElementById('info-ruta').style.display = 'flex';
+                document.getElementById('ruta-distancia').textContent = leg.distance.text;
+                document.getElementById('ruta-tiempo').textContent = leg.duration.text;
+            } else {
+                alert('No se pudo calcular la ruta: ' + status);
+            }
+        });
+    }
+
+    function cambiarModo() {
+        if (ultimoDestino) calcularRuta();
+    }
+
+    function calcularRuta() {
+        var modo = document.getElementById('modo-transporte').value;
+        directionsService.route({
+            origin: { lat: latUsuario, lng: lngUsuario },
+            destination: ultimoDestino,
+            travelMode: google.maps.TravelMode[modo]
+        }, function (result, status) {
+            if (status === 'OK') {
+                directionsRenderer.setDirections(result);
+                var leg = result.routes[0].legs[0];
+                document.getElementById('info-ruta').style.display = 'flex';
+                document.getElementById('ruta-distancia').textContent = leg.distance.text;
+                document.getElementById('ruta-tiempo').textContent = leg.duration.text;
+            } else {
+                alert('No se pudo calcular la ruta: ' + status);
+            }
+        });
+    }
+
+    function limpiarRuta() {
+        directionsRenderer.setDirections({ routes: [] });
+        document.getElementById('info-ruta').style.display = 'none';
+    }
+
+    function mostrarTodosLosMarcadores() {
+        limpiarMarcadores();
+        todasLasSedes.forEach(function (sede) {
+            agregarMarcador(sede);
+        });
+    }
+
+    function agregarMarcador(sede) {
+        var color = sede.tipo === 'Pública' ? '#1a73e8' : '#f59e0b';
+        var marker = new google.maps.Marker({
+            position: { lat: sede.lat, lng: sede.lng },
+            map: map,
+            title: sede.nombreSede,
+            icon: {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
+                        <path d="M18 0C8 0 0 8 0 18c0 13 18 28 18 28s18-15 18-28C36 8 28 0 18 0z" fill="${color}"/>
+                        <circle cx="18" cy="18" r="9" fill="white"/>
+                        <text x="18" y="22" text-anchor="middle" fill="${color}" font-size="11" font-weight="bold">🏫</text>
+                    </svg>
+                `),
+                scaledSize: new google.maps.Size(36, 46),
+                anchor: new google.maps.Point(18, 46)
+            },
+            animation: google.maps.Animation.DROP
+        });
+
+        marker.addListener('click', function () {
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => marker.setAnimation(null), 700);
+
+            if (latUsuario) {
+                // Mostrar popup con opciones
+                infoWindow.setContent(`
+                    <div style="padding:8px;min-width:180px">
+                        <div style="font-size:14px;font-weight:700;margin-bottom:4px">${sede.nombreInstitucion}</div>
+                        <div style="font-size:12px;color:#64748b;margin-bottom:10px">${sede.nombreSede}</div>
+                        <button onclick="trazarRuta(${sede.lat}, ${sede.lng})"
+                            style="width:100%;background:#1a73e8;color:white;border:none;border-radius:6px;padding:7px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:6px">
+                            <i class='bi bi-signpost-2'></i> Cómo llegar
+                        </button>
+                        <button onclick="abrirModal(${sede.idInstitucion})"
+                            style="width:100%;background:#f1f5f9;color:#1e293b;border:none;border-radius:6px;padding:7px;font-size:12px;font-weight:600;cursor:pointer">
+                            Ver detalle
+                        </button>
+                    </div>
+                `);
+                infoWindow.open(map, marker);
+            } else {
+                abrirModal(sede.idInstitucion);
+            }
+        });
+        var tooltip = new google.maps.InfoWindow({
+            content: `<div style="padding:4px 6px; font-size:10px; font-weight:700; color:#1e293b;">
+                        Presiona para ver los detalles
+                        </div>`,
+            disableAutoPan: true,
+            headerDisabled: true
+        });
+
+        marker.addListener('mouseover', function () { tooltip.open(map, marker); });
+        marker.addListener('mouseout', function () { tooltip.close(); });
+        // Fin tooltip hover
+        marcadores.push(marker);
+    }
+
+    function limpiarMarcadores() {
+        marcadores.forEach(m => m.setMap(null));
+        marcadores = [];
+    }
+
+    function geolocalizarme() {
+        if (!navigator.geolocation) {
+            alert('Tu navegador no soporta geolocalización');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            latUsuario = pos.coords.latitude;
+            lngUsuario = pos.coords.longitude;
+            actualizarMapa();
+        }, function () {
+            alert('No se pudo obtener tu ubicación. Verifica los permisos del navegador.');
+        });
+    }
+
+    function actualizarMapa() {
+        if (!latUsuario) return;
+
+        map.setCenter({ lat: latUsuario, lng: lngUsuario });
+        map.setZoom(14);
+
+        // Marcador usuario
+        if (marcadorUsuario) marcadorUsuario.setMap(null);
+        marcadorUsuario = new google.maps.Marker({
+            position: { lat: latUsuario, lng: lngUsuario },
+            map: map,
+            title: 'Tu ubicación',
+            icon: {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="#ea4335" stroke="white" stroke-width="3"/>
+                        <circle cx="12" cy="12" r="4" fill="white"/>
+                    </svg>
+                `),
+                scaledSize: new google.maps.Size(24, 24),
+                anchor: new google.maps.Point(12, 12)
+            },
+            zIndex: 999
+        });
+
+        // Círculo de radio
+        if (circulo) circulo.setMap(null);
+        circulo = new google.maps.Circle({
+            map: map,
+            center: { lat: latUsuario, lng: lngUsuario },
+            radius: radioKm * 1000,
+            strokeColor: '#1a73e8',
+            strokeOpacity: 0.6,
+            strokeWeight: 2,
+            fillColor: '#1a73e8',
+            fillOpacity: 0.05,
+            strokeDasharray: '8 4'
+        });
+
+        filtrarPorCercanía();
+    }
+
+    function filtrarPorCercanía() {
+        if (!latUsuario) return;
+
+        limpiarMarcadores();
+        var sedesFiltradas = [];
+
+        todasLasSedes.forEach(function (sede) {
+            var dist = calcularDistancia(latUsuario, lngUsuario, sede.lat, sede.lng);
+            if (dist <= radioKm) {
+                sede._distancia = dist;
+                sedesFiltradas.push(sede);
+                agregarMarcador(sede);
+            }
+        });
+
+        sedesFiltradas.sort((a, b) => a._distancia - b._distancia);
+        renderizarLista(sedesFiltradas);
+
+        if (circulo) circulo.setCenter({ lat: latUsuario, lng: lngUsuario });
+        if (circulo) circulo.setRadius(radioKm * 1000);
+    }
+
+    function renderizarLista(sedes) {
+        var count = document.getElementById('inst-count');
+        var lista = document.getElementById('lista-inst');
+
+        count.textContent = sedes.length + ' instituciones encontradas en ' + radioKm + ' km';
+
+        if (sedes.length === 0) {
+            lista.innerHTML = '<div class="sin-ubicacion"><i class="bi bi-building-exclamation" style="font-size:32px;display:block;margin-bottom:8px"></i>No hay instituciones en este radio</div>';
+            return;
+        }
+
+        lista.innerHTML = sedes.map(s => `
+            <div class="inst-card" onclick="abrirModal(${s.idInstitucion})">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span class="badge-tipo ${s.tipo === 'Pública' ? 'badge-publico' : 'badge-privado'}">${s.tipo}</span>
+                </div>
+                <div class="inst-nombre">${s.nombreInstitucion}</div>
+                <div style="font-size:12px;color:#64748b">${s.nombreSede}</div>
+                <div class="inst-meta">
+                    <span class="inst-dist"><i class="bi bi-person-walking"></i> A ${s._distancia.toFixed(2)} km</span>
+                    <span>${s.direccion}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function abrirModal(idInstitucion) {
+        var modal = new bootstrap.Modal(document.getElementById('modalInstitucion-' + idInstitucion));
+        modal.show();
+    }
+
+    function cambiarRadio(val) {
+        radioKm = parseFloat(val);
+        document.getElementById('rango-label').textContent = parseFloat(val).toFixed(1) + ' km';
+        if (latUsuario) filtrarPorCercanía();
+    }
+
+    function calcularDistancia(lat1, lng1, lat2, lng2) {
+        var R = 6371;
+        var dLat = (lat2 - lat1) * Math.PI / 180;
+        var dLng = (lng2 - lng1) * Math.PI / 180;
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsKey&callback=initMap" async defer></script>

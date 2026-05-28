@@ -1,0 +1,295 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Contactar Sede";
+    var institucion = ViewBag.Institucion as EduDirectory3.Models.Institucion;
+    var sedes = ViewBag.Sedes as List<EduDirectory3.Models.Sede>;
+    var usuario = ViewBag.Usuario as EduDirectory3.Models.Usuario;
+}
+
+<div class="contact-wrapper">
+
+    <div class="contact-card">
+
+        <!-- Header -->
+        <div class="contact-header">
+            <div class="contact-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="contact-title">Enviar mensaje</h1>
+                @if (institucion != null)
+                {
+                    <p class="contact-subtitle">
+                        @institucion.Nombre
+                    </p>
+                }
+            </div>
+        </div>
+
+        <!-- Alert éxito -->
+        @if (TempData["Exito"] != null)
+        {
+            <div class="alert alert-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                @TempData["Exito"]
+            </div>
+        }
+        @if (TempData["MensajeLogin"] != null)
+        {
+            <div class="alert alert-warning">
+                <p class="mb-0"> @TempData["MensajeLogin"]</p>
+            </div>
+        }
+        <!-- Errores -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <div>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p class="mb-0">@error.ErrorMessage</p>
+                    }
+                </div>
+            </div>
+        }
+        <!-- Formulario -->
+        <form action="@Url.Action("Crear", "FormularioContacto")" method="post">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label class="form-label">Selecciona la sede</label>
+
+                <select name="idSede" class="form-control" required>
+
+                    <option value="">
+                        -- Selecciona una sede --
+                    </option>
+
+                    @foreach (var sede in sedes)
+                    {
+                        <option value="@sede.IdSede">
+                            @sede.NombreSede
+                        </option>
+                    }
+
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Usuario</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@usuario?.Nombre"
+                       readonly />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mensaje</label>
+                <textarea name="mensaje" class="form-control form-textarea"
+                          placeholder="Escribe tu consulta, duda o comentario..."
+                          required maxlength="1000" rows="5"></textarea>
+                <span class="char-hint">Máximo 1000 caracteres</span>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+                Enviar mensaje
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<style>
+    :root {
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --accent: #4f46e5;
+        --accent-ok: #10b981;
+        --accent-red: #ef4444;
+        --text: #1e293b;
+        --text-muted: #94a3b8;
+        --radius: 12px;
+    }
+
+    .contact-wrapper {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .contact-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    }
+
+    .contact-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .contact-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(79,70,229,.08);
+        border: 1px solid rgba(79,70,229,.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        flex-shrink: 0;
+    }
+
+        .contact-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+    .contact-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0 0 .25rem;
+        color: var(--text);
+        letter-spacing: -.02em;
+    }
+
+    .contact-subtitle {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+        font-size: .82rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .sep {
+        color: var(--border);
+    }
+
+    .alert {
+        display: flex;
+        align-items: flex-start;
+        gap: .65rem;
+        padding: .85rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.25rem;
+        font-size: .875rem;
+    }
+
+        .alert p {
+            margin: 0;
+        }
+
+    .alert-success {
+        background: rgba(16,185,129,.08);
+        border: 1px solid rgba(16,185,129,.25);
+        color: #059669;
+    }
+
+    .alert-danger {
+        background: rgba(239,68,68,.08);
+        border: 1px solid rgba(239,68,68,.25);
+        color: var(--accent-red);
+    }
+
+    .form-group {
+        margin-bottom: 1.1rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: .4rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: .65rem .9rem;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: .9rem;
+        color: var(--text);
+        outline: none;
+        transition: border-color .15s, box-shadow .15s;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .char-hint {
+        display: block;
+        font-size: .75rem;
+        color: var(--text-muted);
+        margin-top: .3rem;
+        text-align: right;
+    }
+
+    .btn-submit {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        padding: .75rem;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: .95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity .15s, transform .1s;
+        margin-top: .5rem;
+    }
+
+        .btn-submit:hover {
+            opacity: .88;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+</style>
+

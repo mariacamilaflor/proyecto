@@ -16,7 +16,7 @@
             <div class="container-fluid">
 
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img class="" src="Imagen/logo.png" width="60" height="60">
+                    <img class="" src="/Imagen/logo.png" width="60" height="60">
                     <b>EduDirectory</b>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -27,11 +27,13 @@
                             <a class="nav-link text-secondary m-2" asp-area="" asp-controller="Colegios" asp-action="Index"><b>Directorio</b></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-secondary m-2" asp-area="" asp-controller="#" asp-action="Index"><b>Mapa</b></a>
+                            <a class="nav-link text-secondary m-2" asp-area="" asp-controller="Colegios" asp-action="Mapa"><b>Mapa</b></a>
                         </li>
                         <li class="nav-item">
-                            
-                            <a class="nav-link text-secondary m-2" asp-area="" asp-controller="Colegios" asp-action="Comparar" id="btnIrComparador"> (<span id="contadorComparador">0</span>) <b>Comparacion</b></a>
+                            <a class="nav-link text-secondary m-2" href="#" id="btnIrComparador"> (<span id="contadorComparador">0</span>) <b>Comparacion</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary m-2" asp-area="" asp-controller="Evento" asp-action="Index"><b>Eventos</b></a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
@@ -40,13 +42,13 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer text-muted">
         <div class="container">
             &copy; 2026 - WebApplication3 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
@@ -55,6 +57,28 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
+    @* Botón flotante — redirige directo al chatbot *@
+    <a href="@Url.Action("Index", "Chatbot")"
+       class="btn btn-primary rounded-circle shadow"
+       style="position:fixed; bottom:28px; right:28px; width:56px; height:56px; z-index:1050; border:none; display:flex; align-items:center; justify-content:center;"
+       data-bs-toggle="tooltip" title="Presiona para conversar con el chatbot"
+       aria-label="Abrir asistente">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+             fill="white" viewBox="0 0 24 24">
+            <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
+        </svg>
+    </a>
+    <a href="@Url.Action("Index", "PQR")"
+       class="btn btn-danger rounded-circle shadow"
+       style="position:fixed; bottom:96px; right:28px; width:56px; height:56px; z-index:1050; border:none; display:flex; align-items:center; justify-content:center;"
+       aria-label="Abrir PQR"
+       title="Peticiones, Quejas y Reclamos">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+             fill="white" viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <line x1="9" y1="9" x2="15" y2="9" stroke="white" stroke-width="2" />
+            <line x1="9" y1="13" x2="13" y2="13" stroke="white" stroke-width="2" />
+        </svg>
+    </a>
 </body>
 </html>

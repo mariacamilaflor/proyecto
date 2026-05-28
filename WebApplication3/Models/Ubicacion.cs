@@ -19,7 +19,7 @@ public partial class Ubicacion
 
     [Required]
     [StringLength(100)]
-    public string Barrio { get; set; }
+    public required string Barrio { get; set; }
 
     [Required]
     [StringLength(100)]

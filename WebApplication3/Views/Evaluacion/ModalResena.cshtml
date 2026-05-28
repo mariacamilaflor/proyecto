@@ -1,0 +1,777 @@
+﻿@model EduDirectory3.ViewModels.ResenaViewModel
+
+
+<style>
+    .resena-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1050;
+        background: rgba(0,0,0,0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        animation: fadeIn .2s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    .resena-modal {
+        background: #fff;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 560px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 40px rgba(0,0,0,.18);
+        animation: slideUp .25s ease;
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+
+    .resena-header {
+        padding: 1.25rem 1.5rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .school-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .school-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: #1a3a6e;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .school-name {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0;
+        color: #1a1a2e;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #888;
+        font-size: 20px;
+        padding: 4px;
+        line-height: 1;
+        border-radius: 6px;
+        transition: background .15s;
+    }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+        }
+
+    .steps-bar {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem 1.5rem 0;
+        gap: 0;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+    }
+
+    .step-circle {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+        flex-shrink: 0;
+        transition: all .25s;
+    }
+
+        .step-circle.active {
+            background: #1a3a6e;
+            color: #fff;
+        }
+
+        .step-circle.done {
+            background: #0F6E56;
+            color: #fff;
+        }
+
+        .step-circle.pending {
+            background: #f0f0f0;
+            color: #888;
+            border: 1px solid #ddd;
+        }
+
+    .step-label {
+        font-size: 13px;
+        color: #888;
+    }
+
+        .step-label.active {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+    .step-connector {
+        flex: 1;
+        height: 1px;
+        background: #ddd;
+        margin: 0 8px;
+        transition: background .3s;
+    }
+
+    .modal-body {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .field-group {
+        margin-bottom: 1rem;
+    }
+
+    .field-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+        .field-label i {
+            font-size: 14px;
+            vertical-align: -2px;
+            margin-right: 4px;
+        }
+
+    .form-select, .form-textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #333;
+        transition: border-color .15s;
+        font-family: inherit;
+        outline: none;
+        background: #fff;
+    }
+
+        .form-select:focus, .form-textarea:focus {
+            border-color: #1a3a6e;
+            box-shadow: 0 0 0 3px rgba(26,58,110,.1);
+        }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+        line-height: 1.6;
+    }
+
+    .char-count {
+        font-size: 12px;
+        color: #aaa;
+        text-align: right;
+        margin-top: 4px;
+    }
+
+    .modal-footer {
+        padding: 0 1.5rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .step-hint {
+        font-size: 13px;
+        color: #aaa;
+    }
+
+    .btn-back {
+        background: none;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        color: #666;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+        .btn-back:hover {
+            background: #f5f5f5;
+        }
+
+    .btn-next {
+        background: #1a3a6e;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        cursor: pointer;
+        transition: all .15s;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-next:hover:not(:disabled) {
+            background: #122b54;
+        }
+
+        .btn-next:active:not(:disabled) {
+            transform: scale(.98);
+        }
+
+        .btn-next:disabled {
+            background: #e0e0e0;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+    .sede-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .avg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #FAEEDA;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #633806;
+        margin-bottom: 1rem;
+        margin-left: 8px;
+    }
+
+    .rating-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .rating-cat {
+        font-size: 12px;
+        font-weight: 600;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin: 0 0 6px;
+    }
+
+    .stars {
+        display: flex;
+        gap: 4px;
+    }
+
+    .star {
+        font-size: 26px;
+        cursor: pointer;
+        color: #D3D1C7;
+        transition: color .1s, transform .1s;
+        user-select: none;
+        line-height: 1;
+    }
+
+        .star:hover {
+            transform: scale(1.15);
+        }
+
+        .star.activa {
+            color: #EF9F27;
+        }
+
+    .exito-view {
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .exito-icon {
+        font-size: 56px;
+        color: #0F6E56;
+    }
+
+    .exito-titulo {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+        color: #1a1a2e;
+    }
+
+    .exito-msg {
+        font-size: 14px;
+        color: #777;
+        max-width: 360px;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .text-danger.small {
+        font-size: 12px;
+        color: #dc3545;
+        display: block;
+        margin-top: 4px;
+    }
+</style>
+
+<div class="resena-overlay" id="resenaOverlay">
+    <div class="resena-modal p-4" role="dialog" aria-modal="true" aria-labelledby="resenaTitle">
+        @if (TempData["MensajeLogin"] != null)
+        {
+            <div class="alert alert-warning">
+                <p class="mb-0"> @TempData["MensajeLogin"]</p>
+            </div>
+        }
+        @* ── Header ── *@
+        <div class="resena-header">
+            <div class="school-info">
+                <div class="school-logo">
+                    @(Model.NombreInstitucion?.Substring(0, 2).ToUpper() ?? "IE")
+                </div>
+                <div>
+                    <p class="school-name" id="resenaTitle">@Model.NombreInstitucion</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="cerrarModalResena()" aria-label="Cerrar">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
+        @* ── Barra de pasos ── *@
+        <div class="steps-bar">
+            <div class="step-item">
+                <div class="step-circle active" id="circle-1">1</div>
+                <span class="step-label active" id="label-1">Comentario</span>
+            </div>
+            <div class="step-connector" id="connector-1"></div>
+            <div class="step-item">
+                <div class="step-circle pending" id="circle-2">2</div>
+                <span class="step-label" id="label-2">Calificación</span>
+            </div>
+        </div>
+
+        <div id="formResena">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.IdInstitucion)
+
+            @* ══════════ PASO 1 ══════════ *@
+            <div id="paso1">
+                <div class="modal-body">
+
+                    @* Sede *@
+                    <div class="field-group">
+                        <label class="field-label" for="IdSede">
+                            <i class="ti ti-building-school"></i> Sede a evaluar
+                        </label>
+                        @Html.DropDownListFor(m => m.IdSede,
+                            new SelectList(Model.Sedes, "IdSede", "Nombre"),
+                            "— Selecciona una sede —",
+                            new { @class = "form-select", id = "IdSede", onchange = "verificarPaso1()" })
+                        @Html.ValidationMessageFor(m => m.IdSede, "", new { @class = "text-danger small" })
+                    </div>
+
+                    @* Comentario *@
+                    <div class="field-group">
+                        <label class="field-label" for="Comentario">
+                            <i class="ti ti-message"></i> Comentario
+                        </label>
+                        @Html.TextAreaFor(m => m.Comentario,
+                            new
+                            {
+                                @class = "form-textarea",
+                                id = "Comentario",
+                                maxlength = "500",
+                                placeholder = "Comparte tu experiencia con esta institución...",
+                                oninput = "actualizarContador(); verificarPaso1()"
+                            })
+                        <div class="char-count"><span id="charCount">0</span> / 500</div>
+                        @Html.ValidationMessageFor(m => m.Comentario, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <span class="step-hint">Paso 1 de 2</span>
+                    <button type="button" class="btn-next" id="btnPaso2" onclick="irPaso2()" disabled>
+                        Siguiente <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            @* ══════════ PASO 2 ══════════ *@
+            <div id="paso2" style="display:none">
+                <div class="modal-body">
+
+                    <div class="sede-badge" id="sedeBadge">
+                        <i class="ti ti-building-school"></i>
+                        <span id="sedeTexto"></span>
+                    </div>
+
+                    <div class="avg-badge">
+                        <i class="ti ti-star-filled" style="color:#EF9F27"></i>
+                        <span id="avgValor">—</span> promedio
+                    </div>
+
+                    <div class="rating-grid">
+                        @{
+                            var categorias = new[]
+                            {
+                                new { Key = "Infra",       Label = "Infraestructura",              HtmlField = "CalificacionInfraestructura" },
+                                new { Key = "Prof",        Label = "Profesores",                   HtmlField = "CalificacionProfesores" },
+                                new { Key = "Meto",        Label = "Metodología",                  HtmlField = "CalificacionMetodologia" },
+                                new { Key = "Ambi",        Label = "Ambiente escolar",             HtmlField = "CalificacionAmbienteEscolar" },
+                                new { Key = "Segu",        Label = "Seguridad",                    HtmlField = "CalificacionSeguridad" },
+                                new { Key = "Acti",        Label = "Actividades extracurriculares",HtmlField = "CalificacionActividadesExtracurriculares" }
+                            };
+                        }
+
+                        @foreach (var cat in categorias)
+                        {
+                            <div class="rating-item">
+                                <p class="rating-cat">@cat.Label</p>
+                                <div class="stars" data-key="@cat.Key"
+                                     onmouseleave="resetHover('@cat.Key')">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="star"
+                                              data-val="@i"
+                                              onclick="setRating('@cat.Key', @i, '@cat.HtmlField')"
+                                              onmouseenter="hoverRating('@cat.Key', @i)">★</span>
+                                    }
+                                </div>
+                                @Html.Hidden(cat.HtmlField, 0, new { id = cat.HtmlField, @class = "rating-hidden" })
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-back" onclick="irPaso1()">
+                        <i class="ti ti-arrow-left"></i> Volver
+                    </button>
+                    <button type="button" class="btn-next" id="btnPublicar" disabled onclick="enviarResena()">
+
+                        Publicar reseña <i class="ti ti-send"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @* ── Pantalla de éxito ── *@
+        <div id="exitoView" style="display:none" class="exito-view">
+            <div class="exito-icon"><i class="ti ti-circle-check"></i></div>
+            <p class="exito-titulo">¡Reseña publicada!</p>
+            <p class="exito-msg">Gracias por compartir tu experiencia. Tu opinión ayuda a otros padres a tomar mejores decisiones.</p>
+            <button type="button" class="btn-next" onclick="cerrarModalResena()" style="margin:0 auto">
+                Cerrar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    const ratings = {
+        Infra: 0,
+        Prof: 0,
+        Meto: 0,
+        Ambi: 0,
+        Segu: 0,
+        Acti: 0
+    };
+
+    // =========================
+    // CONTADOR
+    // =========================
+
+    function actualizarContador() {
+
+        const v = document.getElementById('Comentario').value.length;
+
+        document.getElementById('charCount').textContent = v;
+    }
+
+    // =========================
+    // VALIDAR PASO 1
+    // =========================
+
+    function verificarPaso1() {
+
+        const sede = document.getElementById('IdSede').value;
+
+        const com = document.getElementById('Comentario').value.trim();
+
+        document.getElementById('btnPaso2').disabled =
+            !(sede && com.length >= 10);
+    }
+
+    // =========================
+    // IR PASO 2
+    // =========================
+
+    function irPaso2() {
+
+        const sedeEl = document.getElementById('IdSede');
+
+        const texto = sedeEl.options[sedeEl.selectedIndex].text;
+
+        document.getElementById('sedeTexto').textContent = texto;
+
+        document.getElementById('paso1').style.display = 'none';
+
+        document.getElementById('paso2').style.display = 'block';
+
+        document.getElementById('circle-1').className = 'step-circle done';
+
+        document.getElementById('circle-2').className = 'step-circle active';
+
+        document.getElementById('label-2').className = 'step-label active';
+
+        document.getElementById('connector-1').style.background = '#0F6E56';
+    }
+
+    // =========================
+    // VOLVER PASO 1
+    // =========================
+
+    function irPaso1() {
+
+        document.getElementById('paso2').style.display = 'none';
+
+        document.getElementById('paso1').style.display = 'block';
+
+        document.getElementById('circle-1').className = 'step-circle active';
+
+        document.getElementById('circle-2').className = 'step-circle pending';
+
+        document.getElementById('label-2').className = 'step-label';
+
+        document.getElementById('connector-1').style.background = '#ddd';
+    }
+
+    // =========================
+    // CALIFICACIONES
+    // =========================
+
+    function setRating(key, val, field) {
+
+        ratings[key] = val;
+
+        renderStars(key, val);
+
+        document.getElementById(field).value = val;
+
+        updateAvg();
+
+        checkSubmit();
+    }
+
+    function hoverRating(key, val) {
+
+        document.querySelectorAll(`[data-key="${key}"] .star`)
+            .forEach((s, i) => {
+
+                s.style.color = i < val ? '#EF9F27' : '#D3D1C7';
+            });
+    }
+
+    function resetHover(key) {
+
+        renderStars(key, ratings[key]);
+    }
+
+    function renderStars(key, val) {
+
+        document.querySelectorAll(`[data-key="${key}"] .star`)
+            .forEach((s, i) => {
+
+                s.style.color = i < val ? '#EF9F27' : '#D3D1C7';
+            });
+    }
+
+    function updateAvg() {
+
+        const vals = Object.values(ratings).filter(v => v > 0);
+
+        document.getElementById('avgValor').textContent =
+            vals.length
+                ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1)
+                : '—';
+    }
+
+    function checkSubmit() {
+
+        const all = Object.values(ratings).every(v => v > 0);
+
+        document.getElementById('btnPublicar').disabled = !all;
+    }
+
+    // =========================
+    // ENVIAR FORMULARIO
+    // =========================
+    async function enviarResena() {
+
+        console.log("ENVIANDO RESEÑA");
+
+        const btn = document.getElementById('btnPublicar');
+
+
+        btn.disabled = true;
+
+        btn.innerHTML = 'Guardando...';
+
+        const fd = new FormData();
+
+        fd.append("IdInstitucion", document.getElementById("IdInstitucion").value);
+        fd.append("IdSede", document.getElementById("IdSede").value);
+        fd.append("Comentario", document.getElementById("Comentario").value);
+
+        fd.append("CalificacionInfraestructura", document.getElementById("CalificacionInfraestructura").value);
+
+        fd.append("CalificacionProfesores", document.getElementById("CalificacionProfesores").value);
+
+        fd.append("CalificacionMetodologia", document.getElementById("CalificacionMetodologia").value);
+
+        fd.append("CalificacionAmbienteEscolar", document.getElementById("CalificacionAmbienteEscolar").value);
+
+        fd.append("CalificacionSeguridad", document.getElementById("CalificacionSeguridad").value);
+
+        fd.append("CalificacionActividadesExtracurriculares", document.getElementById("CalificacionActividadesExtracurriculares").value);
+
+        fd.append("__RequestVerificationToken", document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+        for (let pair of fd.entries()) {
+
+            console.log(pair[0], pair[1]);
+        }
+
+        try {
+
+            const res = await fetch('/Evaluacion/GuardarResena', {
+
+                method: 'POST',
+
+                body: fd
+            });
+
+            const data = await res.json();
+
+            console.log(data);
+
+            if (data.success) {
+
+                document.getElementById('paso2').style.display = 'none';
+
+                document.querySelector('.steps-bar').style.display = 'none';
+
+                document.getElementById('exitoView').style.display = 'flex';
+
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            }
+            else {
+
+                btn.disabled = false;
+
+                btn.innerHTML = 'Publicar reseña <i class="ti ti-send"></i>';
+
+                alert(data.mensaje);
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            btn.disabled = false;
+
+            btn.innerHTML = 'Publicar reseña <i class="ti ti-send"></i>';
+
+            alert("ERROR EN FETCH");
+        }
+    }
+
+    // =========================
+    // CERRAR
+    // =========================
+
+    function cerrarModalResena() {
+
+        const overlay = document.getElementById('resenaOverlay');
+
+        overlay.style.opacity = '0';
+
+        overlay.style.transition = 'opacity .2s';
+
+        setTimeout(() => overlay.remove(), 200);
+    }
+
+    document.getElementById('resenaOverlay')
+        .addEventListener('click', function (e) {
+
+            if (e.target === this) {
+
+                cerrarModalResena();
+            }
+        });
+
+</script>

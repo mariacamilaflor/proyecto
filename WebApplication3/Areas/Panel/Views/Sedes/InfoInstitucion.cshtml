@@ -1,0 +1,337 @@
+﻿@model EduDirectory3.Areas.Panel.ViewModels.InstitucionDetalleViewModel
+@{
+    ViewData["Title"] = "Info Institución";
+    Layout = "~/Areas/Panel/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --verde: #1a7a4a;
+        --verde-claro: #e8f5ee;
+        --borde: #e0ebe5;
+        --gris: #6b7c74;
+        --texto: #1c2b22;
+        --fondo: #f4f7f6;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.8rem;
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--texto);
+        }
+
+    .card-seccion {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid var(--borde);
+        padding: 1.8rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .card-seccion h5 {
+            color: var(--verde);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--borde);
+        }
+
+    .form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--gris);
+    }
+
+    .form-control {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.88rem;
+    }
+
+        .form-control:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(26,122,74,0.1);
+        }
+
+    .tabla-items {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+
+        .tabla-items th {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gris);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.5rem;
+            border-bottom: 2px solid var(--borde);
+        }
+
+        .tabla-items td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid var(--borde);
+            color: var(--texto);
+        }
+
+        .tabla-items tr:last-child td {
+            border-bottom: none;
+        }
+
+    .btn-guardar {
+        background: var(--verde);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+    }
+
+        .btn-guardar:hover {
+            background: #145c38;
+        }
+
+    .btn-del {
+        background: none;
+        border: 1.5px solid #fee2e2;
+        color: #dc2626;
+        border-radius: 8px;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.78rem;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+        .btn-del:hover {
+            background: #fee2e2;
+        }
+
+    .btn-volver {
+        border: 1.5px solid var(--borde);
+        border-radius: 10px;
+        padding: 0.5rem 1.2rem;
+        font-size: 0.88rem;
+        color: var(--gris);
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-volver:hover {
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+    .alerta-exito {
+        background: #e8f5ee;
+        border: 1px solid #a3d9b8;
+        color: #1a5c35;
+        border-radius: 10px;
+        padding: 0.7rem 1.2rem;
+        margin-bottom: 1.2rem;
+        font-size: 0.88rem;
+    }
+
+    .form-inline-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.8rem;
+        align-items: end;
+    }
+</style>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alerta-exito">@TempData["Exito"]</div>
+}
+
+<div class="page-header">
+    <div>
+        <h2>Info Institución</h2>
+        <p style="color:var(--gris); font-size:0.88rem;">@Model.Institucion.Nombre</p>
+    </div>
+    <a asp-action="Index" class="btn-volver">Volver a sedes</a>
+</div>
+
+@* ── RECTORES ── *@
+<div class="card-seccion">
+    <h5>Rectores</h5>
+
+    @if (Model.Rectores.Any())
+    {
+        <table class="tabla-items mb-3">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.Rectores)
+                {
+                    <tr>
+                        <td>@r.Nombre</td>
+                        <td>@r.Apellido</td>
+                        <td>@r.Telefono</td>
+                        <td>@r.Email</td>
+                        <td>
+                            <form asp-action="EliminarRector" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.IdRector" />
+                                <button type="submit" class="btn-del" onclick="return confirm('¿Eliminar rector?')">✕</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+
+        <p style="color:var(--gris); font-size:0.88rem;">No hay rectores registrados.</p>
+    }
+
+    <form asp-action="AgregarRector" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-inline-grid">
+            <div>
+                <label class="form-label">Nombre</label>
+                <input type="text" name="Nombre" class="form-control" placeholder="Nombre" required />
+            </div>
+            <div>
+                <label class="form-label">Apellido</label>
+                <input type="text" name="Apellido" class="form-control" placeholder="Apellido" required />
+            </div>
+            <div>
+                <label class="form-label">Teléfono</label>
+                <input type="text" name="Telefono" class="form-control" placeholder="300 123 4567" required />
+            </div>
+            <div>
+                <label class="form-label">Email</label>
+                <input type="email" name="Email" class="form-control" placeholder="rector@colegio.com" required />
+            </div>
+            <div>
+                <button type="submit" class="btn-guardar w-100">+ Agregar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@* ── RESULTADOS ICFES ── *@
+<div class="card-seccion">
+    <h5>Resultados ICFES</h5>
+
+    @if (Model.ResultadosIcfes.Any())
+    {
+        <table class="tabla-items mb-3">
+            <thead><tr><th>Año</th><th>Puntaje</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var ic in Model.ResultadosIcfes.OrderByDescending(x => x.Anio))
+                {
+                    <tr>
+                        <td>@ic.Anio</td>
+                        <td>@ic.Puntaje</td>
+                        <td>
+                            <form asp-action="EliminarIcfes" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@ic.Id" />
+                                <button type="submit" class="btn-del" onclick="return confirm('¿Eliminar?')">✕</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+
+        <p style="color:var(--gris); font-size:0.88rem;">No hay resultados registrados.</p>
+    }
+
+    <form asp-action="AgregarIcfes" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-inline-grid">
+            <div>
+                <label class="form-label">Año</label>
+                <input type="number" name="Anio" class="form-control" placeholder="2024" min="2000" max="2099" required />
+            </div>
+            <div>
+                <label class="form-label">Puntaje</label>
+                <input type="number" name="Puntaje" class="form-control" placeholder="320.5" step="0.01" required />
+            </div>
+            <div>
+                <button type="submit" class="btn-guardar w-100">+ Agregar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@* ── EMAILS ── *@
+<div class="card-seccion">
+    <h5>Correos Institucionales</h5>
+
+    @if (Model.Emails.Any())
+    {
+        <table class="tabla-items mb-3">
+            <thead><tr><th>Email</th><th>Pertenece a</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var em in Model.Emails)
+                {
+                    <tr>
+                        <td>@em.Email1</td>
+                        <td>@em.PerteneceA</td>
+                        <td>
+                            <form asp-action="EliminarEmail" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@em.IdEmail" />
+                                <button type="submit" class="btn-del" onclick="return confirm('¿Eliminar?')">✕</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+
+        <p style="color:var(--gris); font-size:0.88rem;">No hay emails registrados.</p>
+    }
+
+    <form asp-action="AgregarEmail" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-inline-grid">
+            <div>
+                <label class="form-label">Email</label>
+                <input type="email" name="Email1" class="form-control" placeholder="info@colegio.com" required />
+            </div>
+            <div>
+                <label class="form-label">Pertenece a</label>
+                <input type="text" name="PerteneceA" class="form-control" placeholder="Secretaría, Rectoría..." required />
+            </div>
+            <div>
+                <button type="submit" class="btn-guardar w-100">+ Agregar</button>
+            </div>
+        </div>
+    </form>
+</div>
+

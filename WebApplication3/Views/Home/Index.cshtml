@@ -8,9 +8,16 @@
     <p class="text-center text-muted fs-5 mb-0 mt-3">La plataforma más completa para comparar y elegir instituciones educativas</p>
     <p class=" text-center text-muted fs-5">con opiniones reales y geolocalización.</p>
     <div class="container d-sm-flex justify-content-center">
-        <form class=" d-flex" role="search">
-            <input class="form-control me-4" style="width:600px; height:50px;" type="search" placeholder="¿Qué buscas? (ej. Liceo departamental)" aria-label="Búsqueda" _mstplaceholder="74607" _msthash="11" _mstaria-label="74607">
-            <button class="btn btn-primary d-inline-flex align-items-center" type="submit" _msttexthash="127192" _msthash="12"> <b>Buscar ahora</b> </button>
+        <form class="d-flex" method="get" action="/Colegios/Index">
+            <input class="form-control me-4"
+                   style="width:600px; height:50px;"
+                   type="search"
+                   name="Nombre"
+                   placeholder="¿Qué buscas? (ej. Liceo departamental)"
+                   aria-label="Búsqueda" />
+            <button class="btn btn-primary d-inline-flex align-items-center" type="submit">
+                <b>Buscar ahora</b>
+            </button>
         </form>
     </div>
     <div>

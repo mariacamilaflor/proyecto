@@ -1,157 +1,434 @@
-﻿@model List<EduDirectory3.ViewModels.ColegioResultadoViewModel>
-
+﻿@using EduDirectory3.ViewModels
+@model List<ColegioResultadoViewModel>
 @{
-    ViewData["Title"] = "Comparar Instituciones";
+    ViewData["Title"] = "Comparador de Instituciones";
 }
 
-<h2 class="fw-bold mb-4">
-    Comparar Instituciones
-</h2>
+<style>
+    .hover-translate:hover {
+        transform: translateY(-4px);
+        transition: transform 0.25s ease-in-out;
+    }
 
-<div class="table-responsive">
+    .bg-premium-dark {
+        background-color: #0f172a !important;
+    }
 
-    <table class="table table-bordered text-center align-middle">
+    .progress {
+        height: 8px;
+    }
 
-        <thead class="table-dark">
+    .seccion-header {
+        cursor: pointer;
+    }
 
-            <tr>
+        .seccion-header:hover {
+            background-color: #f1f5f9 !important;
+        }
+</style>
 
-                <th>Características</th>
-
-                @foreach (var item in Model)
-                {
-                    <th>
-
-                        <img src="@item.Imagen"
-                             class="rounded mb-2"
-                             style="width:120px;height:120px;object-fit:cover;" />
-
-                        <div>
-                            @item.Nombre
-                        </div>
-
-                    </th>
-                }
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            <tr>
-                <th>Tipo</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>@item.Tipo</td>
-                }
-            </tr>
-
-            <tr>
-                <th>Metodología</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>@item.Metodologia</td>
-                }
-            </tr>
-
-            <tr>
-                <th>Calendario</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>@item.Calendario</td>
-                }
-            </tr>
-
-            <tr>
-                <th>Costo</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>
-                        @(item.Costo.HasValue
-                            ? item.Costo.Value.ToString("C0")
-                            : "No definido")
-                    </td>
-                }
-            </tr>
-
-            <tr>
-                <th>Niveles</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>
-
-                        @foreach (var nivel in item.Academico.Niveles)
-                        {
-                            <span class="badge bg-primary me-1">
-                                @nivel
-                            </span>
-                        }
-
-                    </td>
-                }
-            </tr>
-
-            <tr>
-                <th>Servicios</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>
-
-                        @foreach (var servicio in item.Academico.Servicios)
-                        {
-                            <span class="badge bg-success me-1">
-                                @servicio
-                            </span>
-                        }
-
-                    </td>
-                }
-            </tr>
-
-            <tr>
-                <th>ICFES</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>
-                        @(item.Academico.Puntajes.Any()
-                            ? item.Academico.Puntajes.Max()
-                            : 0)
-                    </td>
-                }
-            </tr>
-
-            <tr>
-                <th>Rating</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>
-                        ⭐ @item.Opinion.PromedioRating.ToString("0.0")
-                    </td>
-                }
-            </tr>
-
-            <tr>
-                <th>Reseñas</th>
-
-                @foreach (var item in Model)
-                {
-                    <td>
-                        @item.Opinion.TotalReseñas
-                    </td>
-                }
-            </tr>
-
-        </tbody>
-
-    </table>
-
+@* HEADER *@
+<div class="bg-dark text-white py-5 px-5 border-bottom border-secondary border-opacity-25">
+    <div class="container-xl">
+        <div class="row align-items-center justify-content-between g-4">
+            <div class="col-12 col-md-7">
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 mb-2 px-3 py-2 fw-semibold rounded-pill">
+                    EduDirectory
+                </span>
+                <h1 class="fw-bolder display-5 mb-2">Análisis de Instituciones</h1>
+                <p class="text-white-50 fs-6 mb-0">
+                    Compara las instituciones según rendimiento académico, economía y servicios disponibles.
+                </p>
+            </div>
+            <div class="col-12 col-md-5 d-flex justify-content-md-end gap-2">
+                <a href="/Colegios/Index" class="btn btn-outline-light d-flex align-items-center gap-2 py-2 px-4 rounded-3">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                <button onclick="toggleBuscador()" class="btn btn-primary d-flex align-items-center gap-2 py-2 px-4 rounded-3">
+                    <i class="bi bi-plus"></i> Agregar Institución
+                </button>
+                <button id="btnLimpiarComparador" class="btn btn-outline-danger d-flex align-items-center gap-2 py-2 px-3 rounded-3">
+                    <i class="bi bi-trash2"></i> Restablecer
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div id="mensajeComparador" class="alert alert-success mx-4 mt-3" style="display:none;">
+    El comparador se ha limpiado correctamente
+</div>
+<div id="contenedorBuscador" class="container-xl mt-4 d-none">
+    <div class="card p-4 border-primary border-opacity-25 shadow-sm rounded-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Añadir Institución</h5>
+            <button onclick="toggleBuscador()" class="btn-close"></button>
+        </div>
+        <input type="text" id="inputBusqueda" placeholder="Buscar institución..."
+               class="form-control mb-4" oninput="filtrarInstituciones()" />
+        <div class="row g-3" id="listaResultados"></div>
+    </div>
+</div>
+<main class="container-xl py-5 px-5">
+
+    @if (!Model.Any())
+    {
+        <div class="card text-center border-0 p-5 rounded-4 shadow-sm mx-auto my-5" style="max-width:400px">
+            <i class="bi bi-building text-muted mx-auto mb-3" style="font-size:48px"></i>
+            <h5 class="fw-bold">No hay instituciones para comparar</h5>
+            <p class="text-muted small">Agrega al menos 2 instituciones desde el directorio.</p>
+            <a href="/Colegios/Index" class="btn btn-primary btn-sm mx-auto px-4 py-2 mt-2 rounded-2">
+                Ir al directorio
+            </a>
+        </div>
+    }
+    else
+    {
+        var gridCol = $"col-12 col-md-{12 / Model.Count}";
+
+        @* TARJETAS PRINCIPALES *@
+        <div class="row g-4 mb-5" id="tarjetasColegios">
+            @foreach (var inst in Model)
+            {
+                <div class="@gridCol">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white hover-translate">
+                        <div class="position-relative">
+                            <button onclick="eliminarInstitucion(@inst.IdInstitucion)"
+                                    class="btn btn-sm btn-dark bg-opacity-75 text-white rounded-circle position-absolute top-0 start-0 m-3 d-flex align-items-center justify-content-center"
+                                    style="width:32px;height:32px;border:none;">
+                                <i class="bi bi-trash2"></i>
+                            </button>
+                            <img src="@inst.Imagen" class="w-100 rounded-top-4" style="height:160px;object-fit:cover" />
+                            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 shadow-sm @(inst.Tipo == "Pública" ? "bg-info text-dark" : "bg-primary text-white")">
+                                @inst.Tipo
+                            </span>
+                        </div>
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold text-dark mb-1 h5">@inst.Nombre</h4>
+                            <p class="text-muted small mb-4" style="height:36px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+                                @inst.Descripcion
+                            </p>
+                            <div class="row g-2 border-top pt-3">
+                                <div class="col-6 border-end text-center">
+                                    <span class="text-muted text-uppercase fw-semibold d-block" style="font-size:10px">ICFES Saber 11</span>
+                                    <div class="d-flex align-items-center justify-content-center gap-1 mt-1">
+                                        <i class="bi bi-shield-check text-primary"></i>
+                                        <span class="fw-bold text-dark fs-5">
+                                            @(inst.Academico.Puntajes.Any() ? inst.Academico.Puntajes.Max() : 0)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <span class="text-muted text-uppercase fw-semibold d-block" style="font-size:10px">Calificación</span>
+                                    <div class="d-flex align-items-center justify-content-center gap-1 mt-1">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <span class="fw-bold text-dark fs-5">@inst.Opinion.PromedioRating.ToString("0.0")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* BLOQUE ACADÉMICO *@
+        <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden mb-4">
+            <div class="seccion-header card-header bg-light p-4 border-0 d-flex justify-content-between align-items-center"
+                 onclick="toggleSeccion('academico')">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <div>
+                        <h4 class="h5 fw-bold text-dark mb-1">Desempeño & Metodología Académica</h4>
+                        <p class="text-muted mb-0 small">Análisis de la metodología educativa y rendimiento en Saber 11.</p>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-down" id="icon-academico"></i>
+            </div>
+            <div id="seccion-academico" class="card-body p-4 border-top">
+                <div class="row g-4">
+                    @foreach (var inst in Model)
+                    {
+                        var pct = inst.Academico.Puntajes.Any() ? (double)inst.Academico.Puntajes.Max() / 500 * 100 : 0;
+                        <div class="@gridCol">
+                            <div class="mb-4">
+                                <label class="text-uppercase text-muted fw-bold mb-2 d-block" style="font-size:10px">Modelo Pedagógico</label>
+                                <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2 rounded-2">
+                                    <i class="bi bi-check-circle me-1"></i> @inst.Metodologia
+                                </span>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-uppercase text-muted fw-bold mb-2 d-block" style="font-size:10px">Calendario</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-calendar text-secondary"></i>
+                                    <span class="fw-semibold">Calendario @inst.Calendario</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-uppercase text-muted fw-bold" style="font-size:10px">Rendimiento Saber 11</span>
+                                    <span class="fw-bold text-dark small">@(inst.Academico.Puntajes.Any() ? inst.Academico.Puntajes.Max() : 0) / 500</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-primary rounded-pill" style="width:@pct%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* BLOQUE COSTOS *@
+        <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden mb-4">
+            <div class="seccion-header card-header bg-light p-4 border-0 d-flex justify-content-between align-items-center"
+                 onclick="toggleSeccion('costos')">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-10 p-2 rounded-3 text-success">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div>
+                        <h4 class="h5 fw-bold text-dark mb-1">Costos y Presupuesto</h4>
+                        <p class="text-muted mb-0 small">Comparación del valor de matrícula mensual estimado.</p>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-down" id="icon-costos"></i>
+            </div>
+            <div id="seccion-costos" class="card-body p-4 border-top">
+                <div class="row g-4">
+                    @foreach (var inst in Model)
+                    {
+                        <div class="@gridCol">
+                            <div class="p-3 bg-light rounded-3">
+                                <label class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size:10px">Pensión Mensual</label>
+                                <span class="fs-4 fw-bold text-success d-block">
+                                    @(inst.Costo > 0 ? inst.Costo.Value.ToString("C0") : "Gratuito ($0)")
+                                </span>
+                                <span class="text-muted" style="font-size:11px">
+                                    @(inst.Costo > 0 ? "Costo privada estimado" : "Financiado por el estado")
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* BLOQUE NIVELES Y SERVICIOS *@
+        <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden mb-4">
+            <div class="seccion-header card-header bg-light p-4 border-0 d-flex justify-content-between align-items-center"
+                 onclick="toggleSeccion('logistica')">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-secondary bg-opacity-10 p-2 rounded-3 text-secondary">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <div>
+                        <h4 class="h5 fw-bold text-dark mb-1">Niveles y Servicios Adicionales</h4>
+                        <p class="text-muted mb-0 small">Grados escolares ofrecidos y servicios adicionales.</p>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-down" id="icon-logistica"></i>
+            </div>
+            <div id="seccion-logistica" class="card-body p-4 border-top">
+                <div class="row g-4">
+                    @foreach (var inst in Model)
+                    {
+                        <div class="@gridCol">
+                            <div class="mb-4">
+                                <label class="text-uppercase text-muted fw-bold mb-2 d-block" style="font-size:10px">Niveles Ofrecidos</label>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var nivel in inst.Academico.Niveles)
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2 rounded-2">
+                                            @nivel.FirstOrDefault()
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-uppercase text-muted fw-bold mb-2 d-block" style="font-size:10px">Servicios</label>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var servicio in inst.Academico.Servicios)
+                                    {
+                                        <span class="badge bg-success-subtle text-success-emphasis px-3 py-2 rounded-2">
+                                            @servicio.FirstOrDefault()
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* BLOQUE OPINIONES *@
+        <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden mb-4">
+            <div class="seccion-header card-header bg-light p-4 border-0 d-flex justify-content-between align-items-center"
+                 onclick="toggleSeccion('opiniones')">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 p-2 rounded-3 text-warning">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div>
+                        <h4 class="h5 fw-bold text-dark mb-1">Opiniones y Reseñas</h4>
+                        <p class="text-muted mb-0 small">Calificación promedio y total de reseñas de la comunidad.</p>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-down" id="icon-opiniones"></i>
+            </div>
+            <div id="seccion-opiniones" class="card-body p-4 border-top">
+                <div class="row g-4">
+                    @foreach (var inst in Model)
+                    {
+                        <div class="@gridCol">
+                            <div class="p-3 bg-light rounded-3 text-center">
+                                <div class="fs-2 fw-bold text-warning">@inst.Opinion.PromedioRating.ToString("0.0")</div>
+                                <div class="mb-2">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= Math.Round(inst.Opinion.PromedioRating) ? "bi-star-fill text-warning" : "bi-star text-muted")"></i>
+                                    }
+                                </div>
+                                <div class="text-muted small">@inst.Opinion.TotalReseñas reseñas</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* ACCIONES *@
+        <div class="p-4 bg-white border border-light-subtle rounded-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-4 mt-2">
+            <div class="d-flex align-items-start gap-3">
+                <div class="bg-info bg-opacity-10 p-2 rounded-3 text-info d-none d-sm-flex">
+                    <i class="bi bi-info-circle"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1 text-dark h6">¿Deseas compartir esta comparación?</h5>
+                    <p class="text-muted mb-0 small">Exporta la comparativa actual</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-semibold d-flex align-items-center gap-2">
+                    <i class="bi bi-file-text"></i> Exportar
+                </button>
+            </div>
+        </div>
+    }
+    <p>@ViewBag.TodasLasInstituciones</p>
+</main>
+
+<script>
+    var todasLasInstituciones = @Html.Raw(ViewBag.TodasInstituciones ?? "[]");
+    function toggleSeccion(sec) {
+        const seccion = document.getElementById('seccion-' + sec);
+        const icon = document.getElementById('icon-' + sec);
+        if (seccion.classList.contains('d-none')) {
+            seccion.classList.remove('d-none');
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            seccion.classList.add('d-none');
+            icon.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    const btnLimpiar = document.getElementById('btnLimpiarComparador');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function () {
+            localStorage.removeItem('comparador');
+            const msg = document.getElementById('mensajeComparador');
+            if (msg) {
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+            }
+            window.location.href = '/Colegios/Index';
+        });
+    }
+
+
+    function obtenerComparador() {
+        var c = localStorage.getItem('comparador');
+        return c ? JSON.parse(c) : [];
+    }
+
+    function guardarComparador(lista) {
+        localStorage.setItem('comparador', JSON.stringify(lista));
+    }
+
+    function eliminarInstitucion(id) {
+        var comparador = obtenerComparador();
+        comparador = comparador.filter(i => parseInt(i) !== parseInt(id));
+        guardarComparador(comparador);
+
+        if (comparador.length === 0) {
+            window.location.href = '/Colegios/Index';
+        } else {
+            var url = '/Colegios/Comparar?';
+            comparador.forEach(i => url += 'idInstituciones=' + i + '&');
+            window.location.href = url;
+        }
+    }
+
+    function toggleBuscador() {
+        var buscador = document.getElementById('contenedorBuscador');
+        buscador.classList.toggle('d-none');
+        if (!buscador.classList.contains('d-none')) filtrarInstituciones();
+    }
+
+    function filtrarInstituciones() {
+        var comparador = obtenerComparador();
+
+        var busqueda = document.getElementById('inputBusqueda').value.toLowerCase();
+        var disponibles = todasLasInstituciones.filter(i =>
+            !comparador.map(c => parseInt(c)).includes(parseInt(i.id)) &&
+            i.nombre.toLowerCase().includes(busqueda)
+        );
+
+        var lista = document.getElementById('listaResultados');
+        if (disponibles.length === 0) {
+            lista.innerHTML = '<div class="col-12 text-center text-muted small py-2">No hay más instituciones disponibles.</div>';
+            return;
+        }
+
+        lista.innerHTML = disponibles.map(inst => `
+            <div class="col-12 col-md-4">
+                <div onclick="agregarInstitucion(${inst.id})"
+                     class="d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light"
+                     style="cursor:pointer">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="${inst.imagen}" class="rounded" style="width:42px;height:42px;object-fit:cover">
+                        <div>
+                            <h6 class="mb-0 fw-bold small">${inst.nombre}</h6>
+                            <span class="text-muted" style="font-size:11px">${inst.tipo}</span>
+                        </div>
+                    </div>
+                    <i class="bi bi-plus-circle text-primary fs-5"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function agregarInstitucion(id) {
+        var comparador = obtenerComparador();
+        if (comparador.map(c => parseInt(c)).includes(parseInt(id))) return;
+        comparador.push(id);
+        guardarComparador(comparador);
+
+        var url = '/Colegios/Comparar?';
+        comparador.forEach(i => url += 'idInstituciones=' + i + '&');
+        window.location.href = url;
+    }
+
+    // Sincronizar localStorage con las instituciones actuales en pantalla
+    var idsActuales = [@Html.Raw(string.Join(",", Model.Select(m => m.IdInstitucion)))];
+    var comparadorActual = obtenerComparador();
+    idsActuales.forEach(id => {
+        if (!comparadorActual.includes(id)) comparadorActual.push(id);
+    });
+    guardarComparador(comparadorActual);
+
+
+</script>

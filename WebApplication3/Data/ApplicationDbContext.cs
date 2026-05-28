@@ -1,4 +1,5 @@
 ﻿using EduDirectory3.Models;
+using EduDirectory3.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,9 @@ namespace EduDirectory3.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
+        public virtual DbSet<InstitucionResultado> InstitucionResultados { get; set; }
+        public DbSet<Favorito> Favorito { get; set; }
+        public DbSet<Evento> Evento { get; set; }
         public virtual DbSet<ActividadExtracurricularPreferencia> ActividadExtracurricularPreferencia { get; set; }
 
         public virtual DbSet<ActividadesExtracurriculares> ActividadesExtracurriculares { get; set; }
@@ -55,7 +59,12 @@ namespace EduDirectory3.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
+
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<InstitucionResultado>().HasNoKey().ToView(null);
+
             modelBuilder.Entity<ActividadExtracurricularPreferencia>(entity =>
             {
                 entity.HasKey(e => e.IdActividadExtracurricularPreferencia).HasName("PK__Activida__1FD12A63972B702B");

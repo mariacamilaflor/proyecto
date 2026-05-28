@@ -40,10 +40,19 @@ namespace EduDirectory3.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var evaluacion = await _context.Evaluacion.FindAsync(id);
+            var evaluacion = await _context.Evaluacion
+                .Include(e => e.Calificacion)  // ← carga las calificaciones hijas
+                .Include(e => e.IdUsuarioNavigation)
+                .FirstOrDefaultAsync(e => e.IdEvaluacion == id);
+
             if (evaluacion == null) return NotFound();
 
+            // 1. Primero elimina las calificaciones hijas
+            _context.Calificacion.RemoveRange(evaluacion.Calificacion);
+
+            // 2. Luego elimina la evaluación
             _context.Evaluacion.Remove(evaluacion);
+
             await _context.SaveChangesAsync();
 
             TempData["Exito"] = "Comentario eliminado correctamente.";
